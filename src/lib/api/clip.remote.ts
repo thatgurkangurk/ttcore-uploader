@@ -23,6 +23,7 @@ export const createNewClip = command(CreateNewClipSchema, async (data) => {
 	await db.insert(clip).values({
 		createdById: event.locals.user.id,
 		url: data.url,
-		videoId: serverSettings.videoId
+		videoId: serverSettings.videoId,
+		title: data.title
 	});
 });
