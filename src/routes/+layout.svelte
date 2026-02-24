@@ -17,7 +17,7 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<ModeWatcher defaultMode="dark" />
+<ModeWatcher defaultMode="dark" disableTransitions />
 
 {#snippet authStatus()}
 	<div class="flex flex-row items-center gap-3">

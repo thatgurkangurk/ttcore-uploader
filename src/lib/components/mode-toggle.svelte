@@ -5,6 +5,7 @@
 	import { toggleMode } from "mode-watcher";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { setMode, mode } from "mode-watcher";
+	import { onMount } from "svelte";
 
 	function handleModeChange() {
 		if (mode.current === "light") {
@@ -15,6 +16,47 @@
 			}
 		}
 	}
+
+	function eyeProtection() {
+		alert("nice try. protecting your eyes...");
+		setMode("dark");
+	}
+
+	$effect(() => {
+		if (mode.current === "light") {
+			eyeProtection();
+		}
+	});
+
+	onMount(() => {
+		const html = document.documentElement;
+
+		function checkTheme() {
+			const isDarkClass = html.classList.contains("dark");
+			const colorScheme = html.style.colorScheme;
+
+			const isLight = !isDarkClass || colorScheme === "light";
+
+			if (isLight) {
+				eyeProtection();
+			}
+		}
+
+		checkTheme();
+
+		const observer = new MutationObserver(() => {
+			checkTheme();
+		});
+
+		observer.observe(html, {
+			attributes: true,
+			attributeFilter: ["class", "style"]
+		});
+
+		return () => {
+			observer.disconnect();
+		};
+	});
 </script>
 
 <Button onclick={handleModeChange} variant="outline" size="icon">
