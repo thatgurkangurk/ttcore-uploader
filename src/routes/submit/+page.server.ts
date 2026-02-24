@@ -15,5 +15,9 @@ export const load = (async (ev) => {
 			message: "sorry, but submissions are not open at the moment. check back later !"
 		});
 
-	return {};
+	const currentVideo = serverSettings.videoId;
+
+	return {
+		currentVideo
+	};
 }) satisfies PageServerLoad;

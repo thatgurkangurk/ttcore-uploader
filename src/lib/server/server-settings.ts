@@ -4,7 +4,7 @@ import { serverSettings } from "./db/schema/server-settings";
 export type ServerSettings = typeof serverSettings.$inferSelect;
 
 export async function getServerSettings(): Promise<ServerSettings> {
-	const settings = await db.query.serverSettings.findFirst({
+	const settings = await db._query.serverSettings.findFirst({
 		where: (table, { eq }) => eq(table.id, 0)
 	});
 
