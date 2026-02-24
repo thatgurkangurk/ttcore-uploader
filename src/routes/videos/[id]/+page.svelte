@@ -29,8 +29,11 @@
 				<CardTitle class="text-xl">{clip.title}</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<!-- svelte-ignore a11y_media_has_caption -->
-				<video src={clip.url} controls preload="metadata"></video>
+				<div class="aspect-video w-full overflow-hidden rounded-lg">
+					<!-- svelte-ignore a11y_media_has_caption -->
+					<video class=" h-40 w-full object-cover" src={clip.url} controls preload="metadata"
+					></video>
+				</div>
 			</CardContent>
 			<CardFooter class="grid grid-cols-1 gap-1">
 				<p>
