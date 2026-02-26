@@ -36,6 +36,10 @@
 
 <br />
 
+<p>please do not use discord cdn links, since they expire !</p>
+
+<br />
+
 <Form of={form} onsubmit={submitForm}>
 	<Field of={form} path={["title"]}>
 		{#snippet children(field)}

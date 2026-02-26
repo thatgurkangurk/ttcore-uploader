@@ -9,6 +9,14 @@ export const CreateNewClipSchema = v.object({
 	url: v.pipe(
 		v.string("please provide a url"),
 		v.url("please provide a valid url"),
+		v.check((value) => {
+			try {
+				const parsed = new URL(value);
+				return parsed.hostname !== "cdn.discordapp.com";
+			} catch {
+				return false;
+			}
+		}, "please do not use discord cdn links"),
 		v.regex(/\.(mp4|webm|mov|mkv|avi)$/i, "url must be a valid video")
 	)
 });
