@@ -11,7 +11,11 @@ export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg" // or "pg" or "mysql"
 	}),
-	plugins: [apiKey()],
+	plugins: [
+		apiKey({
+			apiKeyHeaders: ["x-api-key"]
+		})
+	],
 	socialProviders: {
 		discord: {
 			clientId: env.DISCORD_CLIENT_ID,
