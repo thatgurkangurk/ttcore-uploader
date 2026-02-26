@@ -4,6 +4,7 @@
 	import { ModeWatcher } from "mode-watcher";
 	import { SessionState, setSession } from "$lib/session.svelte.js";
 	import Navbar from "$lib/components/navbar.svelte";
+	import { Toaster } from "$lib/components/ui/sonner/index.js";
 
 	let { children, data } = $props();
 
@@ -15,6 +16,7 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <ModeWatcher defaultMode="dark" disableTransitions />
+<Toaster />
 
 <div class="min-h-screen p-4">
 	<Navbar />

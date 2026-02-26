@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db/index.ts";
 import { env } from "$env/dynamic/private";
+import { apiKey } from "better-auth/plugins";
 
 if (!env.DISCORD_CLIENT_ID) throw new Error("DISCORD_CLIENT_ID is not set");
 if (!env.DISCORD_CLIENT_SECRET) throw new Error("DISCORD_CLIENT_SECRET is not set");
@@ -10,6 +11,7 @@ export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg" // or "pg" or "mysql"
 	}),
+	plugins: [apiKey()],
 	socialProviders: {
 		discord: {
 			clientId: env.DISCORD_CLIENT_ID,
