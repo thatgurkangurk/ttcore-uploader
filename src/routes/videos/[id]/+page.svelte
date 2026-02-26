@@ -10,7 +10,9 @@
 		CardHeader,
 		CardTitle
 	} from "$lib/components/ui/card/index.js";
+	import Star from "@lucide/svelte/icons/star";
 	import { getClipsForVideo } from "$lib/api/video.remote";
+	import { setClipSelected } from "$lib/api/clip.remote";
 
 	let { data, params }: PageProps = $props();
 
@@ -45,6 +47,17 @@
 				<p>
 					created by <span>{clip.creator!.name}</span>
 				</p>
+				<Button
+					onclick={async () =>
+						await setClipSelected({
+							clipId: clip.id,
+							selected: !clip.selected
+						})}
+					variant="outline"
+					size="icon"
+				>
+					<Star {...clip.selected ? { fill: "#ffffff" } : {}} />
+				</Button>
 			</CardFooter>
 		</Card>
 	{/each}

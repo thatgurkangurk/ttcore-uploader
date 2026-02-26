@@ -5,5 +5,7 @@ export const clip = pgTable("clip", (t) => ({
 	createdById: t.text("created_by_id").notNull(),
 	videoId: t.integer("video_id").notNull(),
 	url: t.text("url").notNull().unique(),
-	title: t.text().notNull()
+	title: t.text().notNull(),
+	selected: t.boolean().notNull().default(false),
+	createdAt: t.timestamp("created_at").notNull().defaultNow()
 }));

@@ -13,7 +13,23 @@ export const auth = betterAuth({
 	socialProviders: {
 		discord: {
 			clientId: env.DISCORD_CLIENT_ID,
-			clientSecret: env.DISCORD_CLIENT_SECRET
+			clientSecret: env.DISCORD_CLIENT_SECRET,
+
+			mapProfileToUser: async (profile) => {
+				return {
+					username: profile.username,
+					name: profile.display_name
+				};
+			}
+		}
+	},
+	user: {
+		additionalFields: {
+			username: {
+				type: "string",
+				unique: true,
+				required: true
+			}
 		}
 	}
 });
