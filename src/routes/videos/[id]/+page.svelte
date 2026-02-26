@@ -31,7 +31,7 @@
 	all clips for traitor town core {page.params.id}
 </h1>
 
-<div class="flex w-fit flex-col gap-2">
+<div class="grid w-fit gap-4 pt-2 sm:grid-cols-1 md:grid-cols-3">
 	{#each clips as clip}
 		<Card class="h-full w-full">
 			<CardHeader>
