@@ -18,7 +18,7 @@ export const auth = betterAuth({
 			mapProfileToUser: async (profile) => {
 				return {
 					username: profile.username,
-					name: profile.display_name
+					name: profile.global_name
 				};
 			}
 		}
