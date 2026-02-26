@@ -1,7 +1,6 @@
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { getServerSettings } from "$lib/server/server-settings";
-import { db } from "$lib/server/db";
 
 export const load = (async (ev) => {
 	if (!ev.locals.user)
@@ -21,19 +20,5 @@ export const load = (async (ev) => {
 			message: "sorry, but submissions are not open at the moment. check back later !"
 		});
 
-	const currentVideo = serverSettings.videoId;
-
-	const allClips = await db.query.clip.findMany({
-		where: {
-			videoId: Number.parseInt(ev.params.id)
-		},
-		with: {
-			creator: true
-		}
-	});
-
-	return {
-		currentVideo,
-		allClips
-	};
+	return {};
 }) satisfies PageServerLoad;

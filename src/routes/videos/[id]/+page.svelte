@@ -10,10 +10,17 @@
 		CardHeader,
 		CardTitle
 	} from "$lib/components/ui/card/index.js";
+	import { getClipsForVideo } from "$lib/api/video.remote";
 
-	let { data }: PageProps = $props();
+	let { data, params }: PageProps = $props();
 
 	const session = useSession();
+
+	const clips = $derived(
+		await getClipsForVideo({
+			videoId: Number.parseInt(params.id)
+		})
+	);
 </script>
 
 <Button href="/videos">go back</Button>
@@ -23,7 +30,7 @@
 </h1>
 
 <div class="flex w-fit flex-col gap-2">
-	{#each data.allClips as clip}
+	{#each clips as clip}
 		<Card class="h-full w-full">
 			<CardHeader>
 				<CardTitle class="text-xl">{clip.title}</CardTitle>
@@ -31,8 +38,7 @@
 			<CardContent>
 				<div class="aspect-video w-full overflow-hidden rounded-lg">
 					<!-- svelte-ignore a11y_media_has_caption -->
-					<video class=" h-40 w-full object-cover" src={clip.url} controls preload="metadata"
-					></video>
+					<video class=" h-40 w-full object-cover" src={clip.url} controls preload="none"></video>
 				</div>
 			</CardContent>
 			<CardFooter class="grid grid-cols-1 gap-1">
