@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.3 AS base
+FROM oven/bun:1.3.10-alpine AS base
 LABEL org.opencontainers.image.source="https://github.com/thatgurkangurk/ttcore-uploader"
 WORKDIR /app
 
