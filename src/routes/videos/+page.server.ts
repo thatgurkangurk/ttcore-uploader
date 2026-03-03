@@ -17,11 +17,6 @@ export const load = (async (ev) => {
 
 	const serverSettings = await getServerSettings();
 
-	if (!serverSettings.submissionsOpen)
-		throw error(423, {
-			message: "sorry, but submissions are not open at the moment. check back later !"
-		});
-
 	const currentVideo = serverSettings.videoId;
 
 	const allVideos = await db.query.video.findMany({
