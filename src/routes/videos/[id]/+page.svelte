@@ -11,24 +11,33 @@
 		CardTitle
 	} from "$lib/components/ui/card/index.js";
 	import Star from "@lucide/svelte/icons/star";
-	import { getClipsForVideo } from "$lib/api/video.remote";
+	import { getClipsForVideo, getVideoById } from "$lib/api/video.remote";
 	import { setClipSelected } from "$lib/api/clip.remote";
+	import ToggleSubmissionsOpen from "$lib/components/toggle-submissions-open.svelte";
 
 	let { data, params }: PageProps = $props();
 
 	const session = useSession();
 
+	const video = $derived(
+		await getVideoById({
+			videoId: params.id
+		})
+	);
+
 	const clips = $derived(
 		await getClipsForVideo({
-			videoId: Number.parseInt(params.id)
+			videoId: params.id
 		})
 	);
 </script>
 
 <Button href="/videos">go back</Button>
 
+<ToggleSubmissionsOpen videoId={video.id} />
+
 <h1 class="text-3xl font-bold tracking-tight md:text-4xl">
-	all clips for traitor town core {page.params.id}
+	all clips for {video.title}
 </h1>
 
 <div class="grid w-fit gap-4 pt-2 sm:grid-cols-1 md:grid-cols-3">

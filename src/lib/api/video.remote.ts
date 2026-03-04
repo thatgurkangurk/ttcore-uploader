@@ -5,6 +5,8 @@ import { gurkanOnlyGuard } from "./utils";
 import { serverSettings } from "$lib/server/db/schema/server-settings";
 import { eq } from "drizzle-orm";
 import { getServerSettings } from "$lib/server/server-settings";
+import { error } from "@sveltejs/kit";
+import { video } from "$lib/server/db/schema/video";
 
 export const getVideos = query(async () => {
 	const allVideos = await db.query.video.findMany({
@@ -14,6 +16,24 @@ export const getVideos = query(async () => {
 	});
 	return allVideos;
 });
+
+export const getVideoById = query(
+	v.object({
+		videoId: v.string()
+	}),
+	async (data) => {
+		gurkanOnlyGuard();
+		const queriedVideo = await db.query.video.findFirst({
+			where: {
+				id: data.videoId
+			}
+		});
+
+		if (!queriedVideo) error(404);
+
+		return queriedVideo;
+	}
+);
 
 export const getClipsForVideo = query(
 	v.object({
@@ -38,26 +58,44 @@ export const getClipsForVideo = query(
 	}
 );
 
-export const getSubmissionsOpen = query(async () => {
-	gurkanOnlyGuard();
-	const settings = await getServerSettings();
+export const getSubmissionsOpen = query(
+	v.object({
+		videoId: v.string()
+	}),
+	async (data) => {
+		gurkanOnlyGuard();
+		const queriedVideo = await db.query.video.findFirst({
+			where: {
+				id: data.videoId
+			}
+		});
 
-	return settings.submissionsOpen;
-});
+		if (!queriedVideo) error(404);
+
+		return queriedVideo.submissionsOpen;
+	}
+);
 
 export const setSubmissionsOpen = command(
 	v.object({
+		videoId: v.string(),
 		submissionsOpen: v.boolean()
 	}),
 	async (data) => {
 		gurkanOnlyGuard();
 		await db
-			.update(serverSettings)
+			.update(video)
 			.set({
 				submissionsOpen: data.submissionsOpen
 			})
-			.where(eq(serverSettings.id, 0));
+			.where(eq(video.id, data.videoId));
 
-		await getSubmissionsOpen().refresh();
+		await getSubmissionsOpen({
+			videoId: data.videoId
+		}).refresh();
+		await getVideoById({
+			videoId: data.videoId
+		}).refresh();
+		await getVideos().refresh();
 	}
 );

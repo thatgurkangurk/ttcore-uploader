@@ -17,16 +17,17 @@ export const load = (async (ev) => {
 
 	const serverSettings = await getServerSettings();
 
-	const currentVideo = serverSettings.videoId;
-
 	const allVideos = await db.query.video.findMany({
 		columns: {
-			id: true
+			id: true,
+			title: true
+		},
+		orderBy: {
+			createdAt: "asc"
 		}
 	});
 
 	return {
-		currentVideo,
 		allVideos
 	};
 }) satisfies PageServerLoad;
