@@ -1,12 +1,21 @@
-import { command, query } from "$app/server";
+import { command, form, query } from "$app/server";
 import { db } from "$lib/server/db";
 import * as v from "valibot";
 import { gurkanOnlyGuard } from "./utils";
-import { serverSettings } from "$lib/server/db/schema/server-settings";
 import { eq } from "drizzle-orm";
-import { getServerSettings } from "$lib/server/server-settings";
 import { error } from "@sveltejs/kit";
 import { video } from "$lib/server/db/schema/video";
+import { CreateNewVideoSchema } from "../../routes/videos/schemas";
+
+export const createVideo = form(CreateNewVideoSchema, async (data) => {
+	gurkanOnlyGuard();
+
+	await db.insert(video).values({
+		title: data.title
+	});
+
+	await getVideos().refresh();
+});
 
 export const getVideos = query(async () => {
 	const allVideos = await db.query.video.findMany({

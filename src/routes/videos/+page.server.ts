@@ -1,7 +1,5 @@
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { getServerSettings } from "$lib/server/server-settings";
-import { db } from "$lib/server/db";
 import { GURKANS_USER_ID } from "$lib/api/utils";
 
 export const load = (async (ev) => {
@@ -15,19 +13,5 @@ export const load = (async (ev) => {
 			message: "sorry, but you cannot access this page"
 		});
 
-	const serverSettings = await getServerSettings();
-
-	const allVideos = await db.query.video.findMany({
-		columns: {
-			id: true,
-			title: true
-		},
-		orderBy: {
-			createdAt: "asc"
-		}
-	});
-
-	return {
-		allVideos
-	};
+	return {};
 }) satisfies PageServerLoad;
