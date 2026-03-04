@@ -6,9 +6,18 @@ import { serverSettings } from "$lib/server/db/schema/server-settings";
 import { eq } from "drizzle-orm";
 import { getServerSettings } from "$lib/server/server-settings";
 
+export const getVideos = query(async () => {
+	const allVideos = await db.query.video.findMany({
+		orderBy: {
+			createdAt: "asc"
+		}
+	});
+	return allVideos;
+});
+
 export const getClipsForVideo = query(
 	v.object({
-		videoId: v.number()
+		videoId: v.string()
 	}),
 	async (params) => {
 		gurkanOnlyGuard();

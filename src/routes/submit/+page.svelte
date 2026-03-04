@@ -1,41 +1,28 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
+	import { getVideos } from "$lib/api/video.remote";
 	import { Button } from "$lib/components/ui/button/index.js";
-	import { useSession } from "$lib/session.svelte";
 	import type { PageProps } from "./$types";
-	import SubmitForm from "./components/submit-form.svelte";
 
 	let { data }: PageProps = $props();
 
-	const session = useSession();
+	const videos = $derived(await getVideos());
 </script>
 
-{#if data.submissionsOpen}
-	<Button href="/">go back</Button>
+<Button href="/">go back</Button>
 
-	<h1 class="text-3xl font-bold tracking-tight md:text-4xl">tt core submitter</h1>
+<h1 class="text-3xl font-bold tracking-tight md:text-4xl">gurkan's video submitter</h1>
 
-	<h2 class="text-2xl font-bold tracking-tight md:text-3xl">
-		please submit your videos for traitor town core {data.currentVideo}
-	</h2>
+<p class="font-bold">here are all the current open submissions:</p>
 
-	{#if session.current?.user}
-		<SubmitForm />
-	{/if}
-{:else}
-	<h1 class="text-3xl font-bold tracking-tight md:text-4xl">
-		sorry, but submissions are not open at the moment, please check back later !
-	</h1>
-
-	{#if data.submitters.length > 0}
-		<br />
-		<p class="font-bold">
-			but thank you to all of these amazing people who submitted for traitor town core {data.currentVideo}:
-		</p>
-
-		<ul class="pl-2">
-			{#each data.submitters as submitter (submitter.id)}
-				<li>{submitter.name} - <span>@{submitter.username}</span></li>
-			{/each}
-		</ul>
-	{/if}
-{/if}
+<div class="grid w-fit grid-cols-1 gap-3">
+	{#each videos as video (video.id)}
+		<Button
+			href={resolve("/submit/[videoId]", {
+				videoId: video.id
+			})}>{video.title}</Button
+		>
+	{:else}
+		<p class="font-bold">no clip submissions are open at the moment !</p>
+	{/each}
+</div>

@@ -1,0 +1,34 @@
+<script lang="ts">
+	import { Button } from "$lib/components/ui/button/index.js";
+	import SubmitForm from "../components/submit-form.svelte";
+	import type { PageProps } from "./$types";
+
+	let { data }: PageProps = $props();
+</script>
+
+<Button href="/submit">go back</Button>
+
+{#if data.details.submissionsOpen}
+	<h1 class="text-2xl font-bold tracking-tight md:text-3xl">
+		please submit your videos for {data.details.title}
+	</h1>
+
+	<SubmitForm videoId={data.details.id} />
+{:else}
+	<h1 class="text-3xl font-bold tracking-tight md:text-4xl">
+		sorry, but submissions are not open at the moment, please check back later !
+	</h1>
+
+	{#if data.submitters.length > 0}
+		<br />
+		<p class="font-bold">
+			but thank you to all of these amazing people who submitted for {data.details.title}:
+		</p>
+
+		<ul class="pl-2">
+			{#each data.submitters as submitter (submitter.id)}
+				<li>{submitter.name} - <span>@{submitter.username}</span></li>
+			{/each}
+		</ul>
+	{/if}
+{/if}

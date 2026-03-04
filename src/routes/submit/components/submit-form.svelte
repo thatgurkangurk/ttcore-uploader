@@ -6,12 +6,19 @@
 	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 	import { createNewClip } from "$lib/api/clip.remote";
 
+	type Props = {
+		videoId: string;
+	};
+
+	let { videoId }: Props = $props();
+
 	const form = createForm({
 		schema: CreateNewClipSchema
 	});
 
 	const submitForm: SubmitHandler<typeof CreateNewClipSchema> = async (output) => {
 		await createNewClip({
+			videoId: videoId,
 			title: output.title,
 			url: output.url
 		}).catch((err) => {
