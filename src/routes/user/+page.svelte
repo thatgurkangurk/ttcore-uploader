@@ -33,7 +33,7 @@
 	<p>your api keys</p>
 
 	<div class="grid grid-cols-1 gap-4">
-		{#each apiKeysResource.current?.data || [] as apiKey (apiKey.id)}
+		{#each apiKeysResource.current?.data?.apiKeys || [] as apiKey (apiKey.id)}
 			<div class="flex flex-row items-center gap-2">
 				<p>{apiKey.name} - {apiKey.start}...</p>
 				<AlertDialog.Root>
