@@ -8,7 +8,7 @@ export const GET: RequestHandler = async (ev) => {
 
 	const allClips = await db.query.clip.findMany({
 		where: {
-			videoId: Number.parseInt(ev.params.id)
+			videoId: ev.params.id
 		},
 		orderBy: {
 			createdAt: "asc"
