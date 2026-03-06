@@ -20,17 +20,21 @@
 
 	const session = useSession();
 
-	const video = $derived(
-		await getVideoById({
+	const videoPromise = $derived(
+		getVideoById({
 			videoId: params.id
 		})
 	);
 
-	const clips = $derived(
-		await getClipsForVideo({
+	const clipsPromise = $derived(
+		getClipsForVideo({
 			videoId: params.id
 		})
 	);
+
+	const video = $derived(await videoPromise);
+
+	const clips = $derived(await clipsPromise);
 </script>
 
 <Button href={resolve("/videos")}>go back</Button>
