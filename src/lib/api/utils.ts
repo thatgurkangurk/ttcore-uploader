@@ -4,7 +4,26 @@ import { error } from "@sveltejs/kit";
 export const GURKANS_USER_ID = "RD12iPBWXphrrOjaRsdNRQCJOd6Z7nbQ";
 
 export function gurkanOnlyGuard() {
+	const { user, session } = authGuard();
+
+	if (user.id !== GURKANS_USER_ID) error(403);
+
+	return {
+		user: user,
+		session: session
+	};
+}
+
+export function authGuard() {
 	const ev = getRequestEvent();
 
-	if (!ev.locals.user || ev.locals.user.id !== GURKANS_USER_ID) error(403);
+	if (!ev.locals.user || !ev.locals.session)
+		error(401, {
+			message: "please sign in to continue"
+		});
+
+	return {
+		user: ev.locals.user,
+		session: ev.locals.session
+	};
 }

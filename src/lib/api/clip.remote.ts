@@ -1,10 +1,10 @@
-import { command, getRequestEvent } from "$app/server";
+import { command } from "$app/server";
 import { error } from "@sveltejs/kit";
 import { CreateNewClipSchema } from "../../routes/submit/schemas";
 import { db } from "$lib/server/db";
 import { clip } from "$lib/server/db/schema/clip";
 import * as v from "valibot";
-import { gurkanOnlyGuard } from "./utils";
+import { authGuard, gurkanOnlyGuard } from "./utils";
 import { getClipsForVideo } from "./video.remote";
 import { eq } from "drizzle-orm";
 
@@ -14,12 +14,7 @@ export const createNewClip = command(
 		...CreateNewClipSchema.entries
 	}),
 	async (data) => {
-		const event = getRequestEvent();
-
-		if (!event.locals.user)
-			throw error(403, {
-				message: "please sign in to continue"
-			});
+		const { user } = authGuard();
 
 		const queriedVideo = await db.query.video.findFirst({
 			where: {
@@ -33,7 +28,7 @@ export const createNewClip = command(
 			});
 
 		await db.insert(clip).values({
-			createdById: event.locals.user.id,
+			createdById: user.id,
 			url: data.url,
 			videoId: data.videoId,
 			title: data.title
