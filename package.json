@@ -20,6 +20,8 @@
 	},
 	"devDependencies": {
 		"@better-auth/api-key": "^1.5.4",
+		"@better-auth/core": "^1.5.4",
+		"@better-auth/drizzle-adapter": "^1.5.4",
 		"@eslint/compat": "^2.0.2",
 		"@eslint/js": "^10.0.1",
 		"@fontsource-variable/dm-sans": "^5.2.8",

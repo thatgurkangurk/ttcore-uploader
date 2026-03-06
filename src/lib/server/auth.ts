@@ -1,5 +1,5 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { betterAuth, type BetterAuthOptions } from "better-auth/minimal";
+import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { db } from "./db/index.ts";
 import { env } from "$env/dynamic/private";
 import { apiKey } from "@better-auth/api-key";
@@ -7,7 +7,7 @@ import { apiKey } from "@better-auth/api-key";
 if (!env.DISCORD_CLIENT_ID) throw new Error("DISCORD_CLIENT_ID is not set");
 if (!env.DISCORD_CLIENT_SECRET) throw new Error("DISCORD_CLIENT_SECRET is not set");
 
-export const auth = betterAuth({
+export const auth = betterAuth<BetterAuthOptions>({
 	database: drizzleAdapter(db, {
 		provider: "pg" // or "pg" or "mysql"
 	}),

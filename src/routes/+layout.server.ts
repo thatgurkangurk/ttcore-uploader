@@ -1,11 +1,15 @@
-import { auth } from "$lib/server/auth";
 import type { LayoutServerLoad } from "./$types";
 
 export const load = (async (ev) => {
-	const session = await auth.api.getSession({
-		headers: ev.request.headers
-	});
+	const session =
+		ev.locals.session && ev.locals.user
+			? {
+					session: ev.locals.session,
+					user: ev.locals.user
+				}
+			: null;
+
 	return {
-		session: session
+		session
 	};
 }) satisfies LayoutServerLoad;
