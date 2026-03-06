@@ -14,6 +14,7 @@
 	import { getClipsForVideo, getVideoById } from "$lib/api/video.remote";
 	import { setClipSelected } from "$lib/api/clip.remote";
 	import ToggleSubmissionsOpen from "$lib/components/toggle-submissions-open.svelte";
+	import { resolve } from "$app/paths";
 
 	let { data, params }: PageProps = $props();
 
@@ -32,7 +33,7 @@
 	);
 </script>
 
-<Button href="/videos">go back</Button>
+<Button href={resolve("/videos")}>go back</Button>
 
 <ToggleSubmissionsOpen videoId={video.id} />
 

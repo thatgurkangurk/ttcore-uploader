@@ -9,7 +9,7 @@
 	const videos = $derived(await getVideos());
 </script>
 
-<Button href="/">go back</Button>
+<Button href={resolve("/")}>go back</Button>
 
 <h1 class="text-3xl font-bold tracking-tight md:text-4xl">gurkan's video submitter</h1>
 

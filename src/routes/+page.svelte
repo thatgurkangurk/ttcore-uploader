@@ -1,4 +1,5 @@
 <script>
+	import { resolve } from "$app/paths";
 	import { Button } from "$lib/components/ui/button/index.js";
 </script>
 
@@ -8,7 +9,7 @@
 
 		<p class="text-lg text-gray-300 md:text-xl">please submit clips here !</p>
 
-		<Button size="lg" variant="secondary" href="/submit">submit a clip!</Button>
+		<Button size="lg" variant="secondary" href={resolve("/submit")}>submit a clip!</Button>
 	</div>
 
 	<div class="flex justify-center md:justify-end">

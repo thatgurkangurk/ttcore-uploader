@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import SubmitForm from "../components/submit-form.svelte";
 	import type { PageProps } from "./$types";
@@ -6,7 +7,7 @@
 	let { data }: PageProps = $props();
 </script>
 
-<Button href="/submit">go back</Button>
+<Button href={resolve("/submit")}>go back</Button>
 
 {#if data.details.submissionsOpen}
 	<h1 class="text-2xl font-bold tracking-tight md:text-3xl">

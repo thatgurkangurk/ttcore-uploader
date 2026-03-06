@@ -1,18 +1,11 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import { createVideo, getVideos } from "$lib/api/video.remote";
 	import InputErrors from "$lib/components/form/input-errors.svelte";
-	import TextInput from "$lib/components/form/text-input.svelte";
-	import ToggleSubmissionsOpen from "$lib/components/toggle-submissions-open.svelte";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
 	import { Input } from "$lib/components/ui/input";
 	import Label from "$lib/components/ui/label/label.svelte";
-	import { useSession } from "$lib/session.svelte";
-	import type { PageProps } from "./$types";
-
-	let { data }: PageProps = $props();
-
-	const session = useSession();
 
 	function toErrors(arr: string[]): [string, ...string[]] | null {
 		if (arr.length === 0) return null;
@@ -24,7 +17,7 @@
 	const videos = $derived(await getVideos());
 </script>
 
-<Button href="/">go back</Button>
+<Button href={resolve("/")}>go back</Button>
 
 <h1 class="text-3xl font-bold tracking-tight md:text-4xl">videos</h1>
 
@@ -66,6 +59,10 @@
 
 <div class="flex w-fit flex-col gap-2">
 	{#each videos as video}
-		<Button href="/videos/{video.id}">{video.title}</Button>
+		<Button
+			href={resolve("/videos/[id]", {
+				id: video.id
+			})}>{video.title}</Button
+		>
 	{/each}
 </div>
