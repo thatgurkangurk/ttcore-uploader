@@ -6,7 +6,7 @@
 	const session = useSession();
 </script>
 
-{#if page.status === 403}
+{#if page.status === 403 || page.status === 401}
 	<h1 class="text-3xl font-bold tracking-tight md:text-4xl">please sign in to continue</h1>
 	<br />
 	<Button
