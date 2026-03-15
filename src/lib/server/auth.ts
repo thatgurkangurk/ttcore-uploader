@@ -1,20 +1,23 @@
-import { betterAuth, type BetterAuthOptions } from "better-auth/minimal";
-import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+import { betterAuth } from "better-auth/minimal";
 import { db } from "./db/index.ts";
 import { env } from "$env/dynamic/private";
-import { apiKey } from "@better-auth/api-key";
+import { apiKey } from "better-auth/plugins";
+import { sveltekitCookies } from "better-auth/svelte-kit";
+import { getRequestEvent } from "$app/server";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 if (!env.DISCORD_CLIENT_ID) throw new Error("DISCORD_CLIENT_ID is not set");
 if (!env.DISCORD_CLIENT_SECRET) throw new Error("DISCORD_CLIENT_SECRET is not set");
 
-export const auth = betterAuth<BetterAuthOptions>({
+export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg" // or "pg" or "mysql"
 	}),
 	plugins: [
 		apiKey({
 			apiKeyHeaders: ["x-api-key"]
-		})
+		}),
+		sveltekitCookies(getRequestEvent)
 	],
 	socialProviders: {
 		discord: {
