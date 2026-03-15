@@ -64,5 +64,8 @@
 	},
 	"dependencies": {
 		"postgres": "^3.4.8"
+	},
+	"overrides": {
+		"better-sqlite3": "file:./stubs/better-sqlite3"
 	}
 }

@@ -1,0 +1,1 @@
+i don't need better-sqlite3 but better-auth forces it to be installed
