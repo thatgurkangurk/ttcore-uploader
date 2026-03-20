@@ -1,5 +1,5 @@
 {
-  "name": "better-sqlite3",
-  "version": "0.0.0",
-  "main": "index.js"
+	"name": "better-sqlite3",
+	"version": "0.0.0",
+	"main": "index.js"
 }

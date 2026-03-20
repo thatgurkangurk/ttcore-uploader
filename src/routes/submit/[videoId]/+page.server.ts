@@ -1,6 +1,7 @@
-import { error } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
 import { db } from "$lib/server/db";
+import { error } from "@sveltejs/kit";
+
+import type { PageServerLoad } from "./$types";
 
 async function getSubmittersForVideo(videoId: string) {
 	const res = await db.query.clip.findMany({

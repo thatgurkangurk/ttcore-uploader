@@ -1,7 +1,8 @@
-import type { RequestHandler } from "./$types";
 import { gurkanOnlyApiKeyGuard } from "$lib/api/server-utils.server";
 import { db } from "$lib/server/db";
 import { json } from "@sveltejs/kit";
+
+import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = async (ev) => {
 	await gurkanOnlyApiKeyGuard(ev.request.headers.get("x-api-key") || "");

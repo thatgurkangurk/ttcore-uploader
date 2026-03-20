@@ -28,11 +28,9 @@
 		...fieldProps
 	}: Props = $props();
 
-	let value: string | number | undefined = $state();
-
-	$effect(() => {
-		value = type === "number" && typeof input === "string" ? Number(input) : input;
-	});
+	let value: string | number | undefined = $derived(
+		type === "number" && typeof input === "string" ? Number(input) : input
+	);
 </script>
 
 <div class={[className]}>

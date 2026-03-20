@@ -2,7 +2,6 @@
 	import { resource } from "runed";
 	import { useSession } from "$lib/session.svelte";
 	import CreateApiKey from "./components/create-api-key.svelte";
-	import { Button } from "$lib/components/ui/button";
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import Trash2 from "@lucide/svelte/icons/trash-2";
@@ -10,7 +9,7 @@
 	const session = useSession();
 
 	const apiKeysResource = resource(
-		() => session.current?.user!,
+		() => session.current?.user,
 		async () => {
 			return await session.authClient.apiKey.list();
 		}
@@ -33,7 +32,7 @@
 	<p>your api keys</p>
 
 	<div class="grid grid-cols-1 gap-4">
-		{#each apiKeysResource.current?.data?.apiKeys || [] as apiKey (apiKey.id)}
+		{#each apiKeysResource.current?.data || [] as apiKey (apiKey.id)}
 			<div class="flex flex-row items-center gap-2">
 				<p>{apiKey.name} - {apiKey.start}...</p>
 				<AlertDialog.Root>

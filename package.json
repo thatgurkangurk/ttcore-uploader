@@ -1,7 +1,7 @@
 {
 	"name": "ttcore-uploader",
-	"private": true,
 	"version": "0.0.1",
+	"private": true,
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -10,18 +10,23 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write .",
+		"old:lint": "prettier --check . && eslint .",
+		"old:format": "prettier --write .",
+		"lint": "oxlint",
+		"lint:fix": "oxlint --fix",
+		"fmt": "oxfmt",
+		"fmt:check": "oxfmt --check",
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
 		"auth:schema": "better-auth generate --config ./src/lib/server/auth.ts --output ./src/lib/server/db/schema/auth.ts --yes"
 	},
+	"dependencies": {
+		"postgres": "^3.4.8"
+	},
 	"devDependencies": {
 		"@better-auth/cli": "~1.4.21",
-		"@eslint/compat": "^2.0.2",
-		"@eslint/js": "^10.0.1",
 		"@fontsource-variable/dm-sans": "^5.2.8",
 		"@formisch/svelte": "^0.7.2",
 		"@internationalized/date": "^3.12.0",
@@ -37,15 +42,12 @@
 		"clsx": "^2.1.1",
 		"drizzle-kit": "^1.0.0-beta.16-ea816b6",
 		"drizzle-orm": "^1.0.0-beta.16-ea816b6",
-		"eslint": "^10.0.2",
-		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.15.2",
 		"globals": "^17.4.0",
 		"jsrepo": "^3.6.2",
 		"mode-watcher": "^1.1.0",
-		"prettier": "^3.8.1",
-		"prettier-plugin-svelte": "^3.5.1",
-		"prettier-plugin-tailwindcss": "^0.7.2",
+		"oxfmt": "^0.41.0",
+		"oxlint": "^1.56.0",
 		"runed": "^0.37.1",
 		"svelte": "^5.53.12",
 		"svelte-adapter-bun": "^1.0.1",
@@ -61,9 +63,6 @@
 		"valibot": "^1.2.0",
 		"vaul-svelte": "0.3.2",
 		"vite": "^8.0.0"
-	},
-	"dependencies": {
-		"postgres": "^3.4.8"
 	},
 	"overrides": {
 		"better-sqlite3": "file:./stubs/better-sqlite3"

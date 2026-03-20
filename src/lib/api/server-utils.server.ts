@@ -1,5 +1,6 @@
 import { auth } from "$lib/server/auth";
 import { error } from "@sveltejs/kit";
+
 import { GURKANS_USER_ID } from "./utils";
 
 export async function gurkanOnlyApiKeyGuard(key: string) {

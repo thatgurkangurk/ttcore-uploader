@@ -1,11 +1,12 @@
 import { command, form, query } from "$app/server";
 import { db } from "$lib/server/db";
-import * as v from "valibot";
-import { gurkanOnlyGuard } from "./utils";
-import { eq } from "drizzle-orm";
-import { error } from "@sveltejs/kit";
 import { video } from "$lib/server/db/schema/video";
+import { error } from "@sveltejs/kit";
+import { eq } from "drizzle-orm";
+import * as v from "valibot";
+
 import { CreateNewVideoSchema } from "../../routes/videos/schemas";
+import { gurkanOnlyGuard } from "./utils";
 
 export const createVideo = form(CreateNewVideoSchema, async (data) => {
 	gurkanOnlyGuard();

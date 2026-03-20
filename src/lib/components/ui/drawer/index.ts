@@ -1,15 +1,14 @@
-import { Drawer as DrawerPrimitive } from "vaul-svelte";
-
-import Root from "$lib/components/ui/drawer/drawer.svelte";
+import Close from "$lib/components/ui/drawer/drawer-close.svelte";
 import Content from "$lib/components/ui/drawer/drawer-content.svelte";
 import Description from "$lib/components/ui/drawer/drawer-description.svelte";
-import Overlay from "$lib/components/ui/drawer/drawer-overlay.svelte";
 import Footer from "$lib/components/ui/drawer/drawer-footer.svelte";
 import Header from "$lib/components/ui/drawer/drawer-header.svelte";
-import Title from "$lib/components/ui/drawer/drawer-title.svelte";
 import NestedRoot from "$lib/components/ui/drawer/drawer-nested.svelte";
-import Close from "$lib/components/ui/drawer/drawer-close.svelte";
+import Overlay from "$lib/components/ui/drawer/drawer-overlay.svelte";
+import Title from "$lib/components/ui/drawer/drawer-title.svelte";
 import Trigger from "$lib/components/ui/drawer/drawer-trigger.svelte";
+import Root from "$lib/components/ui/drawer/drawer.svelte";
+import { Drawer as DrawerPrimitive } from "vaul-svelte";
 
 const Portal: typeof DrawerPrimitive.Portal = DrawerPrimitive.Portal;
 

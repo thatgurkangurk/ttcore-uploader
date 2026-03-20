@@ -1,12 +1,13 @@
 import { command } from "$app/server";
-import { error } from "@sveltejs/kit";
-import { CreateNewClipSchema } from "../../routes/submit/schemas";
 import { db } from "$lib/server/db";
 import { clip } from "$lib/server/db/schema/clip";
+import { error } from "@sveltejs/kit";
+import { eq } from "drizzle-orm";
 import * as v from "valibot";
+
+import { CreateNewClipSchema } from "../../routes/submit/schemas";
 import { authGuard, gurkanOnlyGuard } from "./utils";
 import { getClipsForVideo } from "./video.remote";
-import { eq } from "drizzle-orm";
 
 export const createNewClip = command(
 	v.object({

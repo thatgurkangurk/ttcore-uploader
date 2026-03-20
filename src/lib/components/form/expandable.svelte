@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { watch } from "runed";
 	import type { Snippet } from "svelte";
 
 	interface Props {
@@ -11,6 +12,7 @@
 	let { class: className, id, expanded, children }: Props = $props();
 
 	// Element reference
+	// oxlint-disable-next-line no-unassigned-vars - idk why it isn't seeing the ref in the markup
 	let element: HTMLDivElement;
 
 	// Updates the expandable element height
@@ -19,10 +21,12 @@
 	}
 
 	// Update height when expanded prop changes
-	$effect(() => {
-		expanded;
-		setTimeout(updateElementHeight);
-	});
+	watch(
+		() => [expanded],
+		() => {
+			setTimeout(updateElementHeight);
+		}
+	);
 </script>
 
 <svelte:window
@@ -36,7 +40,7 @@
 <div
 	bind:this={element}
 	class={[
-		"!m-0 h-0 origin-top duration-200",
+		"m-0! h-0 origin-top duration-200",
 		!expanded && "invisible -translate-y-2 scale-y-75 opacity-0",
 		className
 	]}
