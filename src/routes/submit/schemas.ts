@@ -6,6 +6,7 @@ export const CreateNewClipSchema = v.object({
 		v.minLength(4, "please provide a title longer than 4 characters"),
 		v.maxLength(48, "please provide a title shorter than 48 characters")
 	),
+	profileOverride: v.nullish(v.pipe(v.string(), v.uuid())),
 	url: v.pipe(
 		v.string("please provide a url"),
 		v.url("please provide a valid url"),

@@ -22,7 +22,7 @@
 	{@render navLink("/submit", "submit")}
 
 	{#if session.current?.user.id === GURKANS_USER_ID}
-		{@render navLink("/videos", "videos")}
+		{@render navLink("/admin", "admin")}
 	{/if}
 
 	|

@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import * as v from "valibot";
 
 import { CreateNewClipSchema } from "../../routes/submit/schemas";
-import { authGuard, gurkanOnlyGuard } from "./utils";
+import { authGuard, gurkanOnlyGuard, GURKANS_USER_ID } from "./utils";
 import { getClipsForVideo } from "./video.remote";
 
 const CreateNewClipArgs = v.object({
@@ -62,7 +62,8 @@ export const createNewClip = command(CreateNewClipArgs, async (data) => {
 		createdById: user.id,
 		url: data.url,
 		videoId: data.videoId,
-		title: data.title
+		title: data.title,
+		overriddenProfileDataId: user.id === GURKANS_USER_ID ? data.profileOverride : null
 	});
 
 	const embed = createClipSubmittedEmbed(data, queriedVideo, user.name);
