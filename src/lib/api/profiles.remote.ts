@@ -6,6 +6,7 @@ import * as v from "valibot";
 import { gurkanOnlyGuard } from "./utils";
 
 export const getProfiles = query(async () => {
+	gurkanOnlyGuard();
 	const allProfiles = await db.query.profile.findMany();
 	return allProfiles;
 });
