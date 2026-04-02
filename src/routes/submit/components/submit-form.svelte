@@ -51,20 +51,22 @@
   const submitForm: SubmitHandler<typeof CreateNewClipSchema> = async (
     output,
   ) => {
-    await createNewClip({
-      videoId: videoId,
-      title: output.title,
-      url: output.url,
-      profileOverride: output.profileOverride,
-    }).catch((err) => {
+    try {
+      await createNewClip({
+        videoId: videoId,
+        title: output.title,
+        url: output.url,
+        profileOverride: output.profileOverride,
+      });
+
+      reset(form);
+    } catch (err) {
       if (err instanceof Error) {
         alert(err.message);
+      } else {
+        alert("unknown error");
       }
-
-      alert("unknown error");
-    });
-
-    reset(form);
+    }
   };
 </script>
 
