@@ -15,7 +15,8 @@ export const GET: RequestHandler = async (ev) => {
 			createdAt: "asc"
 		},
 		with: {
-			creator: true
+			creator: true,
+			overriddenProfileData: true
 		}
 	});
 

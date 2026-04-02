@@ -11,6 +11,11 @@ export const relations = defineRelations(schema, (r) => ({
 		video: r.one.video({
 			from: r.clip.videoId,
 			to: r.video.id
+		}),
+		overriddenProfileData: r.one.profile({
+			optional: true,
+			from: r.clip.overriddenProfileDataId,
+			to: r.profile.id
 		})
 	},
 	user: {
