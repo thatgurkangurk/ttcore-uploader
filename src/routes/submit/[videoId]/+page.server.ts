@@ -40,7 +40,7 @@ async function getSubmittersForVideo(videoId: string) {
 
 export const load = (async (ev) => {
 	if (!ev.locals.user)
-		throw error(403, {
+		throw error(401, {
 			message: "please sign in to continue"
 		});
 
