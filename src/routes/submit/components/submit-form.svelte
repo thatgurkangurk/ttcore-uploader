@@ -131,7 +131,7 @@
             >
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>profiles</SelectLabel>
+                <SelectLabel>profiles (line 1) - (line 2)</SelectLabel>
                 {#each profileValues as profile (profile.value)}
                   <SelectItem value={profile.value} label={profile.label}>
                     {profile.label}
