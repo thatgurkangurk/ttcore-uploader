@@ -58,11 +58,6 @@ async function getSubmittersForVideo(videoId: string) {
 }
 
 export const load = (async (ev) => {
-	if (!ev.locals.user)
-		throw error(401, {
-			message: "please sign in to continue"
-		});
-
 	const queriedVideo = await db.query.video.findFirst({
 		where: {
 			id: ev.params.videoId
@@ -70,6 +65,11 @@ export const load = (async (ev) => {
 	});
 
 	if (!queriedVideo) throw error(404);
+
+	if (queriedVideo.submissionsOpen && !ev.locals.user)
+		throw error(401, {
+			message: "please sign in to continue"
+		});
 
 	const submitters = queriedVideo.submissionsOpen
 		? []

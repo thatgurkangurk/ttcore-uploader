@@ -41,7 +41,7 @@ export class SessionState {
 	async signInSocial(provider: SocialProvider) {
 		return await this.authClient.signIn.social({
 			provider: provider,
-			callbackURL: page.route.id?.toString()
+			callbackURL: page.url.pathname?.toString()
 		});
 	}
 }
