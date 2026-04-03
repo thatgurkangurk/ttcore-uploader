@@ -44,7 +44,10 @@
 
     <ul class="pl-2">
       {#each data.submitters as submitter (submitter.id)}
-        <li>{submitter.name} - <span>@{submitter.username}</span></li>
+        <li class={[submitter.isOverridden && "italic"]}>
+          {submitter.line1} -
+          <span>{submitter.line2}</span>
+        </li>
       {/each}
     </ul>
   {/if}

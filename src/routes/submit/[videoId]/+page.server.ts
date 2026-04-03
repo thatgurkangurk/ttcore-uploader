@@ -24,15 +24,34 @@ async function getSubmittersForVideo(videoId: string) {
 					name: true,
 					username: true
 				}
-			}
+			},
+			overriddenProfileData: true
 		}
 	});
 
-	const unique = new Map<string, NonNullable<(typeof res)[number]["creator"]>>();
+	const unique = new Map<
+		string,
+		{ id: string; line1: string; line2: string; isOverridden?: boolean }
+	>();
 
 	for (const row of res) {
+		if (row.overriddenProfileData) {
+			unique.set(row.overriddenProfileData.id, {
+				id: row.overriddenProfileData.id,
+				line1: row.overriddenProfileData.line1,
+				line2: row.overriddenProfileData.line2,
+				isOverridden: true
+			});
+
+			continue;
+		}
+
 		if (row.creator) {
-			unique.set(row.creator.id, row.creator);
+			unique.set(row.creator.id, {
+				id: row.creator.id,
+				line1: row.creator.name,
+				line2: `@${row.creator.username}`
+			});
 		}
 	}
 	return [...unique.values()];
