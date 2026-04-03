@@ -10,7 +10,10 @@ class ModalRootState {
 }
 
 class ModalSubState {
-	constructor(private root: ModalRootState) {}
+	private readonly root: ModalRootState;
+	constructor(root: ModalRootState) {
+		this.root = root;
+	}
 
 	get view() {
 		return this.root.view;
