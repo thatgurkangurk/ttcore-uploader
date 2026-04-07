@@ -10,6 +10,11 @@
   const session = useSession();
 
   const videos = $derived(await getVideos());
+
+  const openVideos = $derived.by(() => videos.filter((v) => v.submissionsOpen));
+  const closedVideos = $derived.by(() =>
+    videos.filter((v) => !v.submissionsOpen),
+  );
 </script>
 
 <Button href={resolve("/")}>go back</Button>
@@ -21,7 +26,7 @@
 <p class="font-bold">here are all the current open submissions:</p>
 
 <div class="grid w-fit grid-cols-1 gap-3">
-  {#each videos as video (video.id)}
+  {#each openVideos as video (video.id)}
     <Button
       href={resolve("/submit/[videoId]", {
         videoId: video.id,
@@ -31,3 +36,22 @@
     <p class="font-bold">no clip submissions are open at the moment !</p>
   {/each}
 </div>
+
+<br />
+
+{#if closedVideos.length > 0}
+  <p class="font-bold">here are the submissions that are closed:</p>
+  <p class="italic text-gray-400 pb-2">
+    you can use this to see who submitted to them
+  </p>
+
+  <div class="grid w-fit grid-cols-1 gap-3">
+    {#each closedVideos as video (video.id)}
+      <Button
+        href={resolve("/submit/[videoId]", {
+          videoId: video.id,
+        })}>{video.title}</Button
+      >
+    {/each}
+  </div>
+{/if}
