@@ -3,10 +3,10 @@ import { error } from "@sveltejs/kit";
 
 export const GURKANS_USER_ID = "RD12iPBWXphrrOjaRsdNRQCJOd6Z7nbQ";
 
-export function gurkanOnlyGuard() {
+export function adminOnlyGuard() {
 	const { user, session } = authGuard();
 
-	if (user.id !== GURKANS_USER_ID) error(403);
+	if (!user.admin) error(403);
 
 	return {
 		user: user,

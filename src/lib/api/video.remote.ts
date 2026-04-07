@@ -6,10 +6,10 @@ import { eq } from "drizzle-orm";
 import * as v from "valibot";
 
 import { CreateNewVideoSchema } from "../../routes/videos/schemas";
-import { gurkanOnlyGuard } from "./utils";
+import { adminOnlyGuard } from "./utils";
 
 export const createVideo = form(CreateNewVideoSchema, async (data) => {
-	gurkanOnlyGuard();
+	adminOnlyGuard();
 
 	await db.insert(video).values({
 		title: data.title
@@ -32,7 +32,7 @@ export const getVideoById = query(
 		videoId: v.string()
 	}),
 	async (data) => {
-		gurkanOnlyGuard();
+		adminOnlyGuard();
 		const queriedVideo = await db.query.video.findFirst({
 			where: {
 				id: data.videoId
@@ -50,7 +50,7 @@ export const getClipsForVideo = query(
 		videoId: v.string()
 	}),
 	async (params) => {
-		gurkanOnlyGuard();
+		adminOnlyGuard();
 
 		const allClips = await db.query.clip.findMany({
 			where: {
@@ -73,7 +73,7 @@ export const getSubmissionsOpen = query(
 		videoId: v.string()
 	}),
 	async (data) => {
-		gurkanOnlyGuard();
+		adminOnlyGuard();
 		const queriedVideo = await db.query.video.findFirst({
 			where: {
 				id: data.videoId
@@ -92,7 +92,7 @@ export const setSubmissionsOpen = command(
 		submissionsOpen: v.boolean()
 	}),
 	async (data) => {
-		gurkanOnlyGuard();
+		adminOnlyGuard();
 		await db
 			.update(video)
 			.set({

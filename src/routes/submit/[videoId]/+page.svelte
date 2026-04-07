@@ -1,7 +1,6 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import { getProfiles } from "$lib/api/profiles.remote";
-  import { GURKANS_USER_ID } from "$lib/api/utils";
   import { Button } from "$lib/components/ui/button/index.js";
   import { useSession } from "$lib/session.svelte";
   import SubmitForm from "../components/submit-form.svelte";
@@ -12,7 +11,7 @@
   const session = useSession();
 
   const promise = $derived.by(async () => {
-    if (session.current?.user.id === GURKANS_USER_ID) {
+    if (session.current?.user.admin) {
       return await getProfiles();
     }
 

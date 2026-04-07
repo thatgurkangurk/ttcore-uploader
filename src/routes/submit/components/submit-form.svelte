@@ -22,7 +22,6 @@
   import { Label } from "$lib/components/ui/label";
   import Trash2 from "@lucide/svelte/icons/trash-2";
   import { useSession } from "$lib/session.svelte";
-  import { GURKANS_USER_ID } from "$lib/api/utils";
 
   type Props = {
     videoId: string;
@@ -114,7 +113,7 @@
     {/snippet}
   </Field>
 
-  {#if session.current?.user.id === GURKANS_USER_ID}
+  {#if session.current?.user.admin}
     <br />
 
     <Field of={form} path={["profileOverride"]}>

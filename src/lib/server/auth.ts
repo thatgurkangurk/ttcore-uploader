@@ -38,7 +38,14 @@ export const auth = betterAuth({
 			username: {
 				type: "string",
 				unique: true,
-				required: true
+				required: true,
+				input: false
+			},
+			admin: {
+				type: "boolean",
+				required: true,
+				defaultValue: false,
+				input: false
 			}
 		}
 	}
