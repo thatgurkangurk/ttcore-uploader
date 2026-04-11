@@ -26,7 +26,8 @@ type Video = {
 function createClipSubmittedEmbed(
 	clip: v.InferOutput<typeof CreateNewClipArgs>,
 	video: Video,
-	authorName: string
+	authorName: string,
+	overridden: { user: boolean; profile: boolean }
 ) {
 	const embed = new EmbedBuilder();
 
@@ -36,8 +37,17 @@ function createClipSubmittedEmbed(
 		{
 			name: "author",
 			value: authorName
+		},
+		{
+			name: "overriden user",
+			value: overridden.user ? "yes" : "no"
+		},
+		{
+			name: "overriden profile",
+			value: overridden.profile ? "yes" : "no"
 		}
 	]);
+
 	embed.setTimestamp();
 	embed.setColor(0x7289da);
 
@@ -64,6 +74,8 @@ export const createNewClip = command(CreateNewClipArgs, async (data) => {
 
 	const createdById = isOverridingUserId ? data.userOverride : user.id;
 
+	const isOverridingProfile = user.admin && data.profileOverride != null;
+
 	if (!createdById) {
 		throw new Error("createdById is null/undefined - this should never happen");
 	}
@@ -76,10 +88,13 @@ export const createNewClip = command(CreateNewClipArgs, async (data) => {
 		url: data.url,
 		videoId: data.videoId,
 		title: data.title,
-		overriddenProfileDataId: user.admin ? data.profileOverride : null
+		overriddenProfileDataId: isOverridingProfile ? data.profileOverride : null
 	});
 
-	const embed = createClipSubmittedEmbed(data, queriedVideo, user.name);
+	const embed = createClipSubmittedEmbed(data, queriedVideo, user.name, {
+		profile: isOverridingProfile,
+		user: isOverridingUserId
+	});
 
 	if (env.DISCORD_WEBHOOK_URL) {
 		await fetch(env.DISCORD_WEBHOOK_URL, {
