@@ -22,17 +22,28 @@
   import { Label } from "$lib/components/ui/label";
   import Trash2 from "@lucide/svelte/icons/trash-2";
   import { useSession } from "$lib/session.svelte";
+  import { getProfiles } from "$lib/api/profiles.remote";
+  import { getUsers } from "$lib/api/users.remote";
 
   type Props = {
     videoId: string;
-    profiles: {
-      id: string;
-      line1: string;
-      line2: string;
-    }[];
   };
 
-  let { videoId, profiles }: Props = $props();
+  let { videoId }: Props = $props();
+
+  const session = useSession();
+
+  const adminDataPromise = $derived.by(async () => {
+    if (session.current?.user.admin) {
+      return Promise.all([getProfiles(), getUsers()]);
+    }
+    return [[], []];
+  });
+
+  const adminData = $derived(await adminDataPromise);
+
+  const profiles = $derived(adminData[0]);
+  const users = $derived(adminData[1]);
 
   const profileValues = $derived.by(() => {
     return profiles.map((profile) => ({
@@ -41,11 +52,16 @@
     }));
   });
 
+  const userValues = $derived.by(() => {
+    return users.map((user) => ({
+      value: user.id,
+      label: `${user.name} - @${user.username}`,
+    }));
+  });
+
   const form = createForm({
     schema: CreateNewClipSchema,
   });
-
-  const session = useSession();
 
   const submitForm: SubmitHandler<typeof CreateNewClipSchema> = async (
     output,
@@ -56,6 +72,7 @@
         title: output.title,
         url: output.url,
         profileOverride: output.profileOverride,
+        userOverride: output.userOverride,
       });
 
       reset(form);
@@ -126,7 +143,7 @@
             value={field.input || undefined}
             onValueChange={field.onInput}
           >
-            <SelectTrigger class="w-52"
+            <SelectTrigger class="w-fit"
               >{profileValues.find((f) => f.value === field.input)?.label ??
                 "select a profile override"}</SelectTrigger
             >
@@ -145,6 +162,45 @@
             onclick={() =>
               reset(form, {
                 path: ["profileOverride"],
+              })}
+            variant="destructive"
+            size="icon"
+          >
+            <Trash2 />
+          </Button>
+        </div>
+      {/snippet}
+    </Field>
+
+    <Field of={form} path={["userOverride"]}>
+      {#snippet children(field)}
+        <Label class="pb-2">select a user override</Label>
+        <div class="flex gap-2 items-center">
+          <Select
+            type="single"
+            {...field.props}
+            value={field.input || undefined}
+            onValueChange={field.onInput}
+          >
+            <SelectTrigger class="w-fit"
+              >{userValues.find((f) => f.value === field.input)?.label ??
+                "select a user override"}</SelectTrigger
+            >
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>users (display name) - (username)</SelectLabel>
+                {#each userValues as user (user.value)}
+                  <SelectItem value={user.value} label={user.label}>
+                    {user.label}
+                  </SelectItem>
+                {/each}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Button
+            onclick={() =>
+              reset(form, {
+                path: ["userOverride"],
               })}
             variant="destructive"
             size="icon"

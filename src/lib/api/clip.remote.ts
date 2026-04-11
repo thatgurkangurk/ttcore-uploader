@@ -45,6 +45,8 @@ function createClipSubmittedEmbed(
 }
 
 export const createNewClip = command(CreateNewClipArgs, async (data) => {
+	console.table(data);
+
 	const { user } = authGuard();
 
 	const queriedVideo = await db.query.video.findFirst({
@@ -58,8 +60,19 @@ export const createNewClip = command(CreateNewClipArgs, async (data) => {
 			message: "sorry, but submissions are not open at the moment. check back later !"
 		});
 
+	const isOverridingUserId = user.admin && data.userOverride != null;
+
+	const createdById = isOverridingUserId ? data.userOverride : user.id;
+
+	if (!createdById) {
+		throw new Error("createdById is null/undefined - this should never happen");
+	}
+
+	console.log("Overriding user id:", isOverridingUserId);
+	console.log("createdById:", createdById);
+
 	await db.insert(clip).values({
-		createdById: user.id,
+		createdById,
 		url: data.url,
 		videoId: data.videoId,
 		title: data.title,
