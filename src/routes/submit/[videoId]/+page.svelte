@@ -3,6 +3,13 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import SubmitForm from "../components/submit-form.svelte";
   import type { PageProps } from "./$types";
+  import {
+    Alert,
+    AlertDescription,
+    AlertTitle,
+  } from "$lib/components/ui/alert/index.js";
+  import CircleQuestionMark from "@lucide/svelte/icons/circle-question-mark";
+  import MedalDownloader from "$lib/components/medal-downloader.svelte";
 
   let { data }: PageProps = $props();
 </script>
@@ -13,6 +20,18 @@
   <h1 class="text-2xl font-bold tracking-tight md:text-3xl">
     please submit your videos for {data.details.title}
   </h1>
+
+  <Alert>
+    <CircleQuestionMark />
+    <AlertTitle>do you have a clip on medal?</AlertTitle>
+    <AlertDescription>
+      use this to download it
+
+      <div class="text-white py-2">
+        <MedalDownloader />
+      </div>
+    </AlertDescription>
+  </Alert>
 
   <SubmitForm videoId={data.details.id} />
 {:else}

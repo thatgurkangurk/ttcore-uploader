@@ -90,6 +90,7 @@
 
 <p>
   if you do not have a direct video link, go here to upload one: <a
+    class="underline underline-offset-4"
     href="https://www.image2url.com/video-to-url"
     >https://www.image2url.com/video-to-url</a
   >
