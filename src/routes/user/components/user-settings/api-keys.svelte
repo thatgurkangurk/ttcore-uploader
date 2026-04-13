@@ -149,8 +149,8 @@
   </CardContent>
   <CardFooter>
     <p class="text-sm">
-      this will be shown in the bottom right corner of videos, and in the end
-      credits.
+      this is basically only used for ttcore-clip-preparer, and you most likely
+      won't use this.
     </p>
   </CardFooter>
 </Card>
