@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { useModalSub } from "$lib/components/ui/modal/modal.svelte.js";
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import * as Drawer from "$lib/components/ui/drawer/index.js";
-	import type { DialogContentProps } from "bits-ui";
+	import { useModalSub } from './modal.svelte.js';
+	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import * as Drawer from '$lib/components/ui/drawer/index.js';
+	import type { DialogContentProps } from 'bits-ui';
 
 	const modal = useModalSub();
 
 	let {
 		ref = $bindable(null),
-		hideClose = false,
+		showCloseButton = true,
 		children,
 		...rest
-	}: DialogContentProps & { hideClose?: boolean } = $props();
+	}: DialogContentProps & { showCloseButton?: boolean } = $props();
 </script>
 
-{#if modal.view === "desktop"}
-	<Dialog.Content bind:ref {...rest} {hideClose}>
+{#if modal.view === 'desktop'}
+	<Dialog.Content bind:ref {showCloseButton} {...rest}>
 		{@render children?.()}
 	</Dialog.Content>
 {:else}

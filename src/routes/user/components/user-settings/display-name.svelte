@@ -7,7 +7,6 @@
     CardTitle,
   } from "$lib/components/ui/card";
   import { Button } from "$lib/components/ui/button";
-  import { Separator } from "$lib/components/ui/separator/index.js";
   import Save from "@lucide/svelte/icons/save";
   import { useSession } from "$lib/session.svelte";
   import {
@@ -103,7 +102,6 @@
       </Field>
     </Form>
   </CardContent>
-  <Separator />
   <CardFooter>
     <p class="text-sm">
       this will be shown in the bottom right corner of videos, and in the end

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { useModalSub } from "$lib/components/ui/modal/modal.svelte.js";
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import * as Drawer from "$lib/components/ui/drawer/index.js";
-	import type { WithElementRef } from "bits-ui";
-	import type { HTMLAttributes } from "svelte/elements";
+	import { useModalSub } from './modal.svelte.js';
+	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import * as Drawer from '$lib/components/ui/drawer/index.js';
+	import type { WithElementRef } from 'bits-ui';
+	import type { HTMLAttributes } from 'svelte/elements';
 
 	const modal = useModalSub();
 
@@ -14,7 +14,7 @@
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 </script>
 
-{#if modal.view === "desktop"}
+{#if modal.view === 'desktop'}
 	<Dialog.Footer bind:ref {...rest}>
 		{@render children?.()}
 	</Dialog.Footer>
