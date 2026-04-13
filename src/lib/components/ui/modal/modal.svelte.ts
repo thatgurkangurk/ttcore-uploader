@@ -1,11 +1,11 @@
-import { Context } from 'runed';
-import { MediaQuery } from 'svelte/reactivity';
+import { Context } from "runed";
+import { MediaQuery } from "svelte/reactivity";
 
 class ModalRootState {
-	#isDesktop = new MediaQuery('(min-width: 768px)');
+	#isDesktop = new MediaQuery("(min-width: 768px)");
 
 	get view() {
-		return this.#isDesktop.current ? 'desktop' : 'mobile';
+		return this.#isDesktop.current ? "desktop" : "mobile";
 	}
 }
 
@@ -17,7 +17,7 @@ class ModalSubState {
 	}
 }
 
-const ctx = new Context<ModalRootState>('modal-root-state');
+const ctx = new Context<ModalRootState>("modal-root-state");
 
 export function useModal() {
 	return ctx.set(new ModalRootState());

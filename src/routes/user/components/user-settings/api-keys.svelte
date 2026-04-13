@@ -1,6 +1,3 @@
-<script lang="ts" module>
-</script>
-
 <script lang="ts">
   import {
     Card,
@@ -23,10 +20,10 @@
   import LoaderCircle from "@lucide/svelte/icons/loader-circle";
   import { toast } from "svelte-sonner";
   import { Separator } from "$lib/components/ui/separator";
-  import { resource } from "runed";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import Trash2 from "@lucide/svelte/icons/trash-2";
   import * as v from "valibot";
+  import { getApiKeys } from "../../api-keys.remote";
 
   const CreateNewApiKeySchema = v.object({
     name: v.pipe(
@@ -40,14 +37,12 @@
     schema: CreateNewApiKeySchema,
   });
 
-  const session = useSession();
+  let isDeleting = $state(false);
 
-  const apiKeysResource = resource(
-    () => session.current?.user,
-    async () => {
-      return await session.authClient.apiKey.list();
-    },
-  );
+  const apiKeyPromise = $derived(getApiKeys());
+  const apiKeys = $derived(await apiKeyPromise);
+
+  const session = useSession();
 
   const submitForm: SubmitHandler<typeof CreateNewApiKeySchema> = async (
     output,
@@ -69,7 +64,7 @@
 
     toast.success("the API key is copied to your clipboard");
 
-    await apiKeysResource.refetch();
+    await getApiKeys().refresh();
 
     reset(form);
   };
@@ -81,48 +76,49 @@
   </CardHeader>
   <CardContent class="flex gap-2">
     <div class="grid grid-cols-1 gap-4">
-      {#if apiKeysResource.loading}
-        <p>loading api keys...</p>
-      {:else if apiKeysResource.error}
-        <p>error: {apiKeysResource.error.message}</p>
-      {:else}
-        {#each apiKeysResource.current?.data || [] as apiKey (apiKey.id)}
-          <div class="flex flex-row items-center gap-2">
-            <p>{apiKey.name} - {apiKey.start}...</p>
-            <AlertDialog.Root>
-              <AlertDialog.Trigger
-                class={buttonVariants({ variant: "destructive", size: "icon" })}
-              >
-                <Trash2 />
-              </AlertDialog.Trigger>
-              <AlertDialog.Content>
-                <AlertDialog.Header>
-                  <AlertDialog.Title
-                    >are you sure you want to delete this api key ({apiKey.name})?</AlertDialog.Title
-                  >
-                  <AlertDialog.Description
-                    >this api key will become unusable</AlertDialog.Description
-                  >
-                </AlertDialog.Header>
-                <AlertDialog.Footer>
-                  <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-                  <AlertDialog.Action
-                    onclick={async () => {
-                      await session.authClient.apiKey.delete({
-                        keyId: apiKey.id,
-                      });
+      {#each apiKeys || [] as apiKey (apiKey.id)}
+        <div class="flex flex-row items-center gap-2">
+          <p>{apiKey.name} - {apiKey.start}...</p>
+          <AlertDialog.Root>
+            <AlertDialog.Trigger
+              class={buttonVariants({ variant: "destructive", size: "icon" })}
+            >
+              <Trash2 />
+            </AlertDialog.Trigger>
+            <AlertDialog.Content>
+              <AlertDialog.Header>
+                <AlertDialog.Title
+                  >are you sure you want to delete this api key ({apiKey.name})?</AlertDialog.Title
+                >
+                <AlertDialog.Description
+                  >this api key will become unusable</AlertDialog.Description
+                >
+              </AlertDialog.Header>
+              <AlertDialog.Footer>
+                <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+                <AlertDialog.Action
+                  disabled={isDeleting}
+                  onclick={async () => {
+                    isDeleting = true;
+                    await session.authClient.apiKey.delete({
+                      keyId: apiKey.id,
+                    });
 
-                      await apiKeysResource.refetch();
-                    }}
-                    class={buttonVariants({ variant: "destructive" })}
-                    >Continue</AlertDialog.Action
-                  >
-                </AlertDialog.Footer>
-              </AlertDialog.Content>
-            </AlertDialog.Root>
-          </div>
-        {/each}
-      {/if}
+                    await getApiKeys().refresh();
+                    isDeleting = false;
+                  }}
+                  class={buttonVariants({ variant: "destructive" })}
+                >
+                  {#if isDeleting}
+                    <LoaderCircle class="animate-spin" />
+                  {/if}
+                  Continue
+                </AlertDialog.Action>
+              </AlertDialog.Footer>
+            </AlertDialog.Content>
+          </AlertDialog.Root>
+        </div>
+      {/each}
       <Separator />
       <Form of={form} onsubmit={submitForm}>
         <Field of={form} path={["name"]}>
