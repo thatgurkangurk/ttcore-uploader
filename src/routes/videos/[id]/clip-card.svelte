@@ -125,5 +125,8 @@
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    <p>
+      clip id: <span>{clip.id}</span>
+    </p>
   </CardFooter>
 </Card>
