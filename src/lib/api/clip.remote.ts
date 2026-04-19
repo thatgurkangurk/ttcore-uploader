@@ -109,6 +109,32 @@ export const createNewClip = command(CreateNewClipArgs, async (data) => {
 	}
 });
 
+export const deleteClip = command(
+	v.object({
+		clipId: v.string()
+	}),
+	async (data) => {
+		adminOnlyGuard();
+
+		const queriedClip = await db.query.clip.findFirst({
+			where: {
+				id: data.clipId
+			}
+		});
+
+		if (!queriedClip)
+			throw error(404, {
+				message: "that clip was not found"
+			});
+
+		await db.delete(clip).where(eq(clip.id, data.clipId));
+
+		await getClipsForVideo({
+			videoId: queriedClip.videoId
+		}).refresh();
+	}
+);
+
 export const setClipSelected = command(
 	v.object({
 		clipId: v.string(),
