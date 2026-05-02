@@ -5,6 +5,8 @@
   import ToggleSubmissionsOpen from "$lib/components/toggle-submissions-open.svelte";
   import { resolve } from "$app/paths";
   import ClipCard from "./clip-card.svelte";
+  import { PressedKeys } from "runed";
+  import { throttle } from "$lib/utils/throttle";
 
   let { params }: PageProps = $props();
 
@@ -23,6 +25,14 @@
   const video = $derived(await videoPromise);
 
   const clips = $derived(await clipsPromise);
+
+  const keys = new PressedKeys();
+
+  const throttledRefresh = throttle(() => {
+    getClipsForVideo({ videoId: params.id }).refresh();
+  }, 500);
+
+  keys.onKeys(["shift", "r"], throttledRefresh);
 </script>
 
 <Button href={resolve("/videos")}>go back</Button>
