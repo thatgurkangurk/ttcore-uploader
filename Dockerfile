@@ -9,13 +9,13 @@ RUN apk add --no-cache curl ca-certificates bash build-base git \
 
 FROM base AS deps
 COPY package.json aube-lock.yaml ./
-RUN aube ci
+RUN mise exec -- aube ci
 
 FROM base AS build
 ENV CI=1
 COPY --from=deps /app/node_modules /app/node_modules
 COPY . .
-RUN CI="1" DATABASE_URL="postgres://changeme" DISCORD_CLIENT_ID="CHANGEME" DISCORD_CLIENT_SECRET="CHANGEME" aube run build
+RUN CI="1" DATABASE_URL="postgres://changeme" DISCORD_CLIENT_ID="CHANGEME" DISCORD_CLIENT_SECRET="CHANGEME" mise exec -- aube run build
 
 FROM base
 RUN addgroup -S -g 1001 nodejs \
