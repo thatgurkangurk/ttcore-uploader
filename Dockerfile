@@ -50,4 +50,4 @@ EXPOSE 4321/tcp
 
 USER ttcore
 
-CMD ["mise", "trust", "/app/mise.toml", "&&" "mise", "exec", "--", "node", "./build/index.js"]
+CMD ["mise", "trust", "/app/mise.toml", "&&", "mise", "exec", "--", "node", "./build/index.js"]
