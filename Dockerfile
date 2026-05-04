@@ -40,7 +40,7 @@ RUN groupadd -g 1001 nodejs \
 COPY --from=build --chown=ttcore:nodejs /app/build /app/build
 COPY --from=build --chown=ttcore:nodejs /app/mise.toml /app/mise.lock /app/.npmrc ./
 
-RUN mise trust /app/mise.toml
+
 
 ENV NODE_ENV="production"
 ENV HOST=0.0.0.0
@@ -50,4 +50,6 @@ EXPOSE 4321/tcp
 
 USER ttcore
 
-CMD ["sh", "-c", "mise trust /app/mise.toml && mise exec -- node ./build/index.js"]
+RUN mise trust /app/mise.toml
+
+CMD ["mise", "exec", "--", "node", "./build/index.js"]
