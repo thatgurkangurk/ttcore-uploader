@@ -37,6 +37,10 @@ FROM base
 RUN groupadd -g 1001 nodejs \
  && useradd -u 1001 -g nodejs -m -s /bin/bash ttcore
 
+WORKDIR /app
+
+RUN chown ttcore:nodejs /app
+
 COPY --from=build --chown=ttcore:nodejs /app/build /app/build
 COPY --from=build --chown=ttcore:nodejs /app/mise.toml /app/mise.lock /app/.npmrc /app/package.json /app/aube-lock.yaml ./
 
@@ -51,7 +55,8 @@ EXPOSE 4321/tcp
 
 USER ttcore
 
-RUN mise trust /app/mise.toml
+ENV MISE_JOBS=1
+ENV MISE_TRUSTED_CONFIG_PATHS=/app/mise.toml
 
 RUN mise exec -- aube install --frozen-lockfile --prod --no-optional
 
