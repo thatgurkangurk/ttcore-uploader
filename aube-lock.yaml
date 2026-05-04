@@ -116,10 +116,10 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       drizzle-kit:
-        specifier: ^1.0.0-beta.20
+        specifier: ^1.0.0-rc.1
         version: 1.0.0-rc.2-33e80cd
       drizzle-orm:
-        specifier: ^1.0.0-beta.20
+        specifier: ^1.0.0-rc.1
         version: 1.0.0-rc.2-33e80cd(arktype@2.2.0)(effect@3.21.2)(postgres@3.4.9)(typebox@1.1.37)(valibot@1.3.1(typescript@6.0.3))(zod@4.4.2)
       eslint:
         specifier: ^10.2.0
