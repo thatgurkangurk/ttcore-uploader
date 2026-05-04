@@ -9,6 +9,7 @@ import { db } from "./db/index.ts";
 
 if (!env.DISCORD_CLIENT_ID) throw new Error("DISCORD_CLIENT_ID is not set");
 if (!env.DISCORD_CLIENT_SECRET) throw new Error("DISCORD_CLIENT_SECRET is not set");
+if (!env.BETTER_AUTH_SECRET) throw new Error("BETTER_AUTH_SECRET is not set");
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
@@ -48,7 +49,8 @@ export const auth = betterAuth({
 				input: false
 			}
 		}
-	}
+	},
+	secret: env.BETTER_AUTH_SECRET
 });
 
 export type User = typeof auth.$Infer.Session.user;
