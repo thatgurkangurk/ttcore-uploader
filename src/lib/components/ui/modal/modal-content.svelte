@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { useModalSub } from './modal.svelte.js';
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import * as Drawer from '$lib/components/ui/drawer/index.js';
-	import type { DialogContentProps } from 'bits-ui';
+	import { useModalSub } from "./modal.svelte.js";
+	import * as Dialog from "$lib/components/ui/dialog/index.js";
+	import * as Drawer from "$lib/components/ui/drawer/index.js";
+	import type { DialogContentProps } from "bits-ui";
 
 	const modal = useModalSub();
 
@@ -14,7 +14,7 @@
 	}: DialogContentProps & { showCloseButton?: boolean } = $props();
 </script>
 
-{#if modal.view === 'desktop'}
+{#if modal.view === "desktop"}
 	<Dialog.Content bind:ref {showCloseButton} {...rest}>
 		{@render children?.()}
 	</Dialog.Content>
