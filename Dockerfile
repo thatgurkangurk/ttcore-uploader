@@ -40,7 +40,7 @@ RUN groupadd -g 1001 nodejs \
 COPY --from=build --chown=ttcore:nodejs /app/build /app/build
 COPY --from=build --chown=ttcore:nodejs /app/mise.toml /app/mise.lock /app/.npmrc ./
 
-RUN mise trust .
+RUN mise trust /app/mise.toml
 
 ENV NODE_ENV="production"
 ENV HOST=0.0.0.0
