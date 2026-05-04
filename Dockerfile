@@ -2,10 +2,16 @@ FROM alpine:3.18 AS base
 LABEL org.opencontainers.image.source="https://github.com/thatgurkangurk/ttcore-uploader"
 WORKDIR /app
 
-ENV PATH="/root/.local/bin:${PATH}"
-RUN apk add --no-cache curl ca-certificates bash build-base git \
-    && curl -fsSL https://mise.run | sh \
-    && mise --version
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+ENV MISE_DATA_DIR="/mise"
+ENV MISE_CONFIG_DIR="/mise"
+ENV MISE_CACHE_DIR="/mise/cache"
+ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
+ENV PATH="/mise/shims:$PATH"
+# ENV MISE_VERSION="..."
+
+RUN curl https://mise.run | sh
 
 FROM base AS deps
 COPY package.json aube-lock.yaml ./
