@@ -41,7 +41,7 @@ COPY --from=build --chown=ttcore:nodejs /app/build /app/build
 COPY --from=build --chown=ttcore:nodejs /app/mise.toml /app/mise.lock /app/.npmrc ./
 
 RUN mkdir -p /mise/cache /mise/installs /mise/migrations && \
-    chown -R ttcore:ttcore /mise
+    chown -R ttcore:nodejs /mise
 
 ENV NODE_ENV="production"
 ENV HOST=0.0.0.0
