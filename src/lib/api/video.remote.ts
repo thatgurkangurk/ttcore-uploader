@@ -5,7 +5,7 @@ import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import * as v from "valibot";
 
-import { CreateNewVideoSchema } from "../../routes/videos/schemas";
+import { CreateNewVideoSchema, VideoMessageSchema } from "../../routes/videos/schemas";
 import { adminOnlyGuard, authGuard } from "./utils";
 
 export const createVideo = form(CreateNewVideoSchema, async (data) => {
@@ -19,6 +19,27 @@ export const createVideo = form(CreateNewVideoSchema, async (data) => {
 
 	await getVideos().refresh();
 });
+
+export const setVideoMessage = form(
+	v.object({
+		videoId: v.string(),
+		newMessage: VideoMessageSchema
+	}),
+	async (data) => {
+		adminOnlyGuard();
+
+		await db
+			.update(video)
+			.set({
+				message: data.newMessage,
+				messageUpdatedAt: new Date()
+			})
+			.where(eq(video.id, data.videoId));
+
+		await getVideos().refresh();
+		await getVideoById({ videoId: data.videoId }).refresh();
+	}
+);
 
 export const getVideos = query(async () => {
 	const allVideos = await db.query.video.findMany({

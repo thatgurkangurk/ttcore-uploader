@@ -221,7 +221,7 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(svelte@5.55.5)
       svelte:
-        specifier: ^5.55.1
+        specifier: ^5.55.5
         version: 5.55.5
       svelte-check:
         specifier: ^4.4.6
