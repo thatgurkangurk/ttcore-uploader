@@ -6,13 +6,15 @@ import { eq } from "drizzle-orm";
 import * as v from "valibot";
 
 import { CreateNewVideoSchema } from "../../routes/videos/schemas";
-import { adminOnlyGuard } from "./utils";
+import { adminOnlyGuard, authGuard } from "./utils";
 
 export const createVideo = form(CreateNewVideoSchema, async (data) => {
 	adminOnlyGuard();
 
 	await db.insert(video).values({
-		title: data.title
+		title: data.title,
+		message: data.message,
+		messageUpdatedAt: new Date()
 	});
 
 	await getVideos().refresh();
@@ -25,6 +27,25 @@ export const getVideos = query(async () => {
 		}
 	});
 	return allVideos;
+});
+
+/**
+ * very good name i know
+ */
+export const getDateOfLastSubmissionForVideoByCurrentUser = query(v.string(), async (data) => {
+	const { user } = authGuard();
+
+	const lastSubmittedClip = await db.query.clip.findFirst({
+		orderBy: {
+			createdAt: "desc"
+		},
+		where: {
+			createdById: user.id,
+			videoId: data
+		}
+	});
+
+	return lastSubmittedClip?.createdAt || null;
 });
 
 export const getVideoById = query(

@@ -6,6 +6,7 @@
 	import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
 	import { Input } from "$lib/components/ui/input";
 	import Label from "$lib/components/ui/label/label.svelte";
+	import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
 	function toErrors(arr: string[]): [string, ...string[]] | null {
 		if (arr.length === 0) return null;
@@ -50,6 +51,24 @@
 					/>
 				</div>
 
+				<div class="pt-4">
+					<Label class={[!!createVideo.fields.title.issues() && "text-destructive", "pb-2"]}
+						>message (optional)</Label
+					>
+					<Textarea
+						{...createVideo.fields.message.as("text")}
+						aria-errormessage="{createVideo.fields.message.as('text').name}-error"
+						aria-invalid={!!createVideo.fields.message.issues()}
+					/>
+
+					<InputErrors
+						name={createVideo.fields.message.as("text").name}
+						errors={toErrors(
+							createVideo.fields.message.issues()?.map((value) => value.message) ?? []
+						)}
+					/>
+				</div>
+
 				<br />
 				<Button type="submit">create</Button>
 			</form>
@@ -58,7 +77,7 @@
 </div>
 
 <div class="flex w-fit flex-col gap-2">
-	{#each videos as video}
+	{#each videos as video (video.id)}
 		<Button
 			href={resolve("/videos/[id]", {
 				id: video.id

@@ -72,7 +72,8 @@
     "allowBuilds": {
       "@prisma/client": true,
       "esbuild": true,
-      "sharp": true
+      "sharp": true,
+      "better-sqlite3": "set this to true or false"
     }
   }
 }

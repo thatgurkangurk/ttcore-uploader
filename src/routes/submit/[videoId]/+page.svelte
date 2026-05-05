@@ -5,9 +5,20 @@
 	import type { PageProps } from "./$types";
 	import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert/index.js";
 	import CircleQuestionMark from "@lucide/svelte/icons/circle-question-mark";
+	import CircleAlert from "@lucide/svelte/icons/circle-alert";
 	import MedalDownloader from "$lib/components/medal-downloader.svelte";
+	import { getDateOfLastSubmissionForVideoByCurrentUser } from "$lib/api/video.remote";
+	import {
+		Card,
+		CardContent,
+		CardFooter,
+		CardHeader,
+		CardTitle
+	} from "$lib/components/ui/card/index.js";
 
 	let { data }: PageProps = $props();
+
+	let isMessageDismissed = $state(false);
 </script>
 
 <Button href={resolve("/submit")}>go back</Button>
@@ -29,7 +40,43 @@
 		</AlertDescription>
 	</Alert>
 
-	<SubmitForm videoId={data.details.id} />
+	{#if data.details.message}
+		<br />
+		<Alert variant="destructive">
+			<CircleAlert />
+			<AlertTitle>read this first</AlertTitle>
+			<AlertDescription>
+				{data.details.message}
+			</AlertDescription>
+		</Alert>
+
+		{@const date = await getDateOfLastSubmissionForVideoByCurrentUser(data.details.id)}
+
+		{#if (!date || date > data.details.messageUpdatedAt!) && !isMessageDismissed}
+			<br />
+			<Card>
+				<CardHeader>
+					<CardTitle>please read the above message before submitting</CardTitle>
+				</CardHeader>
+				<CardContent
+					>the message has changed since you last visited this page, please go read it in case there
+					is new important information thank you
+				</CardContent>
+
+				<CardFooter>
+					<Button onclick={() => (isMessageDismissed = true)}>continue</Button>
+				</CardFooter>
+			</Card>
+		{:else}
+			<div class="mt-6">
+				<SubmitForm videoId={data.details.id} />
+			</div>
+		{/if}
+	{:else}
+		<div class="mt-6">
+			<SubmitForm videoId={data.details.id} />
+		</div>
+	{/if}
 {:else}
 	<h1 class="text-3xl font-bold tracking-tight md:text-4xl">
 		sorry, but submissions are not open at the moment, please check back later !
