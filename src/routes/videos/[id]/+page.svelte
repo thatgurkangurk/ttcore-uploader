@@ -44,7 +44,7 @@
 </h1>
 
 <div class="grid w-fit gap-4 pt-2 sm:grid-cols-1 md:grid-cols-3">
-	{#each clips as clip}
+	{#each clips as clip (clip.id)}
 		<ClipCard submissionsOpen={video.submissionsOpen} {clip} />
 	{/each}
 </div>
