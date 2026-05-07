@@ -1,5 +1,5 @@
 import { command } from "$app/server";
-import { env } from "$env/dynamic/private";
+import { env } from "$lib/env";
 import { db } from "$lib/server/db";
 import { clip } from "$lib/server/db/schema/clip";
 import { EmbedBuilder } from "@discordjs/builders";

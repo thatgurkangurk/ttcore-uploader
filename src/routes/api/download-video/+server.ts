@@ -1,4 +1,4 @@
-import { env } from "$env/dynamic/private";
+import { env } from "$lib/env";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 

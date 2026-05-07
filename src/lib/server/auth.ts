@@ -1,5 +1,5 @@
 import { getRequestEvent } from "$app/server";
-import { env } from "$env/dynamic/private";
+import { env } from "$lib/env";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
 import { apiKey } from "better-auth/plugins";
@@ -7,10 +7,6 @@ import { sveltekitCookies } from "better-auth/svelte-kit";
 import { schema } from "./db/schema";
 
 import { db } from "./db/index.ts";
-
-if (!env.DISCORD_CLIENT_ID) throw new Error("DISCORD_CLIENT_ID is not set");
-if (!env.DISCORD_CLIENT_SECRET) throw new Error("DISCORD_CLIENT_SECRET is not set");
-if (!env.BETTER_AUTH_SECRET) throw new Error("BETTER_AUTH_SECRET is not set");
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
