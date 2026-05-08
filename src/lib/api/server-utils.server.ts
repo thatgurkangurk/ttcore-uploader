@@ -16,7 +16,9 @@ export async function gurkanOnlyApiKeyGuard(key: string) {
 		});
 	}
 
-	if (data.key?.userId !== GURKANS_USER_ID)
+	console.log(data);
+
+	if (data.key?.referenceId !== GURKANS_USER_ID)
 		error(403, {
 			message: "you do not have permission to do this"
 		});

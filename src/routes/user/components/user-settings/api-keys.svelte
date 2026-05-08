@@ -61,7 +61,7 @@
 	</CardHeader>
 	<CardContent class="flex gap-2">
 		<div class="grid grid-cols-1 gap-4">
-			{#each apiKeys || [] as apiKey (apiKey.id)}
+			{#each apiKeys.apiKeys as apiKey (apiKey.id)}
 				<div class="flex flex-row items-center gap-2">
 					<p>{apiKey.name} - {apiKey.start}...</p>
 					<AlertDialog.Root>

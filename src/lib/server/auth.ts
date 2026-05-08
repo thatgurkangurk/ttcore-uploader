@@ -1,8 +1,8 @@
 import { getRequestEvent } from "$app/server";
-import { env } from "$lib/env";
+import { env } from "../env.js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
-import { apiKey } from "better-auth/plugins";
+import { apiKey } from "@better-auth/api-key";
 import { sveltekitCookies } from "better-auth/svelte-kit";
 import { schema } from "./db/schema";
 

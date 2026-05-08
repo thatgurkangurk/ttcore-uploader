@@ -1,4 +1,4 @@
-import { env } from "$lib/env";
+import { env } from "../../env.js";
 import { drizzle } from "drizzle-orm/postgres-js";
 
 import { relations } from "./relations";
