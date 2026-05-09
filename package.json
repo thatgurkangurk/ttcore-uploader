@@ -54,7 +54,7 @@
     "prettier": "^3.8.3",
     "prettier-plugin-svelte": "^3.5.1",
     "prettier-plugin-tailwindcss": "^0.7.4",
-    "runed": "^0.23.4",
+    "runed": "^0.37.1",
     "shadcn-svelte": "^1.2.7",
     "svelte": "^5.55.5",
     "svelte-check": "^4.4.8",

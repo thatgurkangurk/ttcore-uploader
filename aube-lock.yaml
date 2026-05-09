@@ -104,6 +104,7 @@ time:
   regexp-to-ast@0.5.0: 2019-12-11T21:28:38.071Z
   rolldown@1.0.0-rc.17: 2026-04-22T11:14:29.632Z
   run-applescript@7.1.0: 2025-09-09T13:42:36.477Z
+  runed@0.37.1: 2025-12-20T15:40:58.290Z
   semver@6.3.1: 2023-07-10T22:38:41.428Z
   sisteransi@1.0.5: 2020-03-18T12:53:26.602Z
   undici-types@7.16.0: 2025-09-09T17:07:27.610Z
@@ -269,8 +270,8 @@ importers:
         specifier: ^0.7.4
         version: 0.7.4(prettier@3.8.3)(prettier-plugin-svelte@3.5.1(prettier@3.8.3)(svelte@5.55.5))
       runed:
-        specifier: ^0.23.4
-        version: 0.23.4(svelte@5.55.5)
+        specifier: ^0.37.1
+        version: 0.37.1(@sveltejs/kit@2.59.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.5)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.25.12)(jiti@2.6.1)(yaml@1.10.3)))(svelte@5.55.5)(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.25.12)(jiti@2.6.1)(yaml@1.10.3)))(svelte@5.55.5)(zod@4.4.2)
       shadcn-svelte:
         specifier: ^1.2.7
         version: 1.2.7(svelte@5.55.5)
@@ -2133,6 +2134,18 @@ packages:
       svelte: ^5.7.0
     peerDependenciesMeta:
       '@sveltejs/kit':
+        optional: true
+
+  runed@0.37.1:
+    resolution: {integrity: sha512-MeFY73xBW8IueWBm012nNFIGy19WUGPLtknavyUPMpnyt350M47PhGSGrGoSLbidwn+Zlt/O0cp8/OZE3LASWA==}
+    peerDependencies:
+      '@sveltejs/kit': ^2.21.0
+      svelte: ^5.7.0
+      zod: ^4.1.0
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      zod:
         optional: true
 
   sade@1.8.1:
@@ -3999,6 +4012,15 @@ snapshots:
       esm-env: 1.2.2
       lz-string: 1.5.0
       svelte: 5.55.5
+  ? runed@0.37.1(@sveltejs/kit@2.59.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.5)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.25.12)(jiti@2.6.1)(yaml@1.10.3)))(svelte@5.55.5)(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.25.12)(jiti@2.6.1)(yaml@1.10.3)))(svelte@5.55.5)(zod@4.4.2)
+
+  : dependencies:
+      '@sveltejs/kit': 2.59.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.5)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.25.12)(jiti@2.6.1)(yaml@1.10.3)))(svelte@5.55.5)(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.25.12)(jiti@2.6.1)(yaml@1.10.3))
+      dequal: 2.0.3
+      esm-env: 1.2.2
+      lz-string: 1.5.0
+      svelte: 5.55.5
+      zod: 4.4.2
 
   sade@1.8.1:
     dependencies:
