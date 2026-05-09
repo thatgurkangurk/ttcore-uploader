@@ -7,7 +7,7 @@ import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import * as v from "valibot";
 
-import { ClipTitleSchema, CreateNewClipSchema } from "../../routes/submit/schemas";
+import { ClipTitleSchema, CreateNewClipSchema, SongsSchema } from "../../routes/submit/schemas";
 import { authGuard, adminOnlyGuard } from "./utils";
 import { getClipsForVideo, getMyClipsForVideo } from "./video.remote";
 
@@ -131,6 +131,42 @@ export const deleteClip = command(
 		await db.delete(clip).where(eq(clip.id, data.clipId));
 
 		await getClipsForVideo({
+			videoId: queriedClip.videoId
+		}).refresh();
+	}
+);
+
+export const setNewClipSongs = command(
+	v.object({
+		clipId: v.string(),
+		songs: SongsSchema
+	}),
+	async (data) => {
+		const { user } = authGuard();
+
+		const queriedClip = await db.query.clip.findFirst({
+			where: {
+				id: data.clipId,
+				createdById: user.id
+			}
+		});
+
+		if (!queriedClip)
+			throw error(404, {
+				message: "that clip was not found"
+			});
+
+		await db
+			.update(clip)
+			.set({
+				songs: data.songs
+			})
+			.where(eq(clip.id, data.clipId));
+
+		await getClipsForVideo({
+			videoId: queriedClip.videoId
+		}).refresh();
+		await getMyClipsForVideo({
 			videoId: queriedClip.videoId
 		}).refresh();
 	}

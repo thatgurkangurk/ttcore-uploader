@@ -16,6 +16,7 @@
 	import { watch } from "runed";
 	import { setNewClipTitle } from "$lib/api/clip.remote.js";
 	import type { Clip } from "$lib/types/clip.js";
+	import EditSongs from "./edit-songs.svelte";
 
 	type Props = {
 		clip: Clip;
@@ -105,6 +106,7 @@
 		</div>
 	</CardContent>
 	<CardFooter class="grid grid-cols-1 gap-1">
+		<EditSongs {clip} />
 		<p>
 			clip id: <span>{clip.id}</span>
 		</p>
