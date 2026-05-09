@@ -21,29 +21,10 @@
 	import Star from "@lucide/svelte/icons/star";
 	import { deleteClip, setClipSelected } from "$lib/api/clip.remote";
 	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
+	import type { Clip } from "$lib/types/clip.js";
 
 	type Props = {
-		clip: {
-			id: string;
-			createdAt: Date;
-			createdById: string;
-			videoId: string;
-			url: string;
-			title: string;
-			selected: boolean;
-			overriddenProfileDataId: string | null;
-			creator: {
-				id: string;
-				name: string;
-				email: string;
-				emailVerified: boolean;
-				image: string | null;
-				createdAt: Date;
-				updatedAt: Date;
-				username: string;
-				admin: boolean;
-			} | null;
-		};
+		clip: Clip;
 		submissionsOpen: boolean;
 	};
 

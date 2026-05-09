@@ -15,13 +15,10 @@
 	import TextInput from "$lib/components/form/text-input.svelte";
 	import { watch } from "runed";
 	import { setNewClipTitle } from "$lib/api/clip.remote.js";
+	import type { Clip } from "$lib/types/clip.js";
 
 	type Props = {
-		clip: {
-			id: string;
-			url: string;
-			title: string;
-		};
+		clip: Clip;
 	};
 
 	let { clip }: Props = $props();
