@@ -51,8 +51,6 @@
 <ToggleSubmissionsOpen videoId={video.id} />
 
 <div>
-	<h3 class="text-xl font-bold tracking-tight md:text-2xl">create a new video</h3>
-
 	<Card class="my-6 w-72">
 		<CardHeader>
 			<CardTitle>set video message</CardTitle>
