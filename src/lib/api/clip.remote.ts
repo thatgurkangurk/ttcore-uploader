@@ -88,7 +88,8 @@ export const createNewClip = command(CreateNewClipArgs, async (data) => {
 		url: data.url,
 		videoId: data.videoId,
 		title: data.title,
-		overriddenProfileDataId: isOverridingProfile ? data.profileOverride : null
+		overriddenProfileDataId: isOverridingProfile ? data.profileOverride : null,
+		songs: data.songs
 	});
 
 	const embed = createClipSubmittedEmbed(data, queriedVideo, user.name, {

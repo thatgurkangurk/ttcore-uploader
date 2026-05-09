@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { createForm, Field, Form, reset, type SubmitHandler } from "@formisch/svelte";
+	import {
+		createForm,
+		Field,
+		FieldArray,
+		Form,
+		insert,
+		remove,
+		reset,
+		type SubmitHandler
+	} from "@formisch/svelte";
 	import { CreateNewClipSchema } from "../schemas";
 	import TextInput from "$lib/components/form/text-input.svelte";
 	import { Button } from "$lib/components/ui/button";
@@ -18,6 +27,7 @@
 	import { useSession } from "$lib/session.svelte";
 	import { getProfiles } from "$lib/api/profiles.remote";
 	import { getUsers } from "$lib/api/users.remote";
+	import { autoAnimate } from "$lib/attachments/auto-animate.svelte";
 
 	type Props = {
 		videoId: string;
@@ -64,7 +74,8 @@
 				title: output.title,
 				url: output.url,
 				profileOverride: output.profileOverride,
-				userOverride: output.userOverride
+				userOverride: output.userOverride,
+				songs: output.songs
 			});
 
 			reset(form);
@@ -204,6 +215,75 @@
 		</Field>
 	{/if}
 
+	<br />
+
+	<FieldArray of={form} path={["songs"]}>
+		{#snippet children(fieldArray)}
+			{@const songCount = fieldArray.items.length}
+
+			<Label class="pb-2">songs used (in correct order, please!)</Label>
+			<div {@attach autoAnimate({ duration: 150 })}>
+				{#each fieldArray.items as item, index (item)}
+					<div class="py-2">
+						<Field of={form} path={["songs", index]}>
+							{#snippet children(field)}
+								<TextInput
+									{...field.props}
+									input={field.input}
+									errors={field.errors}
+									type="text"
+									label="song {index + 1}"
+									placeholder="artist - song title"
+									required
+								>
+									{#snippet button()}
+										<Button
+											size="icon"
+											variant="destructive"
+											type="submit"
+											disabled={form.isSubmitting}
+											onclick={() => {
+												remove(form, {
+													path: ["songs"],
+													at: index
+												});
+											}}
+										>
+											<Trash2 />
+										</Button>
+									{/snippet}
+								</TextInput>
+							{/snippet}
+						</Field>
+					</div>
+				{/each}
+			</div>
+
+			<Button
+				disabled={songCount >= 12}
+				onclick={() =>
+					insert(form, {
+						path: ["songs"],
+						initialInput: ""
+					})}
+			>
+				add song
+			</Button>
+			<Button
+				variant="destructive"
+				disabled={songCount === 0}
+				onclick={() =>
+					reset(form, {
+						path: ["songs"],
+						initialInput: []
+					})}
+			>
+				remove all songs
+			</Button>
+		{/snippet}
+	</FieldArray>
+
+	<br />
 	<br />
 
 	<Button

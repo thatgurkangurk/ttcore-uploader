@@ -10,5 +10,6 @@ export const clip = pgTable("clip", (t) => ({
 	title: t.text().notNull(),
 	selected: t.boolean().notNull().default(false),
 	createdAt: t.timestamp("created_at").notNull().defaultNow(),
-	overriddenProfileDataId: t.uuid("overridden_profile_data_id").references(() => profile.id)
+	overriddenProfileDataId: t.uuid("overridden_profile_data_id").references(() => profile.id),
+	songs: t.text().array().default([]).notNull()
 }));

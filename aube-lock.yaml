@@ -55,6 +55,7 @@ time:
   '@chevrotain/utils@10.5.0': 2023-03-11T15:55:26.673Z
   '@clack/core@0.5.0': 2025-05-22T14:35:16.716Z
   '@clack/prompts@0.11.0': 2025-05-22T14:35:16.922Z
+  '@formkit/auto-animate@0.9.0': 2025-09-05T13:33:14.718Z
   '@mrleebo/prisma-ast@0.13.1': 2025-10-22T13:45:52.853Z
   '@opentelemetry/api@1.9.1': 2026-03-25T15:53:54.092Z
   '@opentelemetry/semantic-conventions@1.40.0': 2026-02-26T08:25:04.110Z
@@ -191,6 +192,9 @@ importers:
       '@formisch/svelte':
         specifier: ^0.7.5
         version: 0.7.5(svelte@5.55.5)(typescript@6.0.3)(valibot@1.4.0(typescript@6.0.3))
+      '@formkit/auto-animate':
+        specifier: ^0.9.0
+        version: 0.9.0
       '@internationalized/date':
         specifier: ^3.12.1
         version: 3.12.1
@@ -688,6 +692,9 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  '@formkit/auto-animate@0.9.0':
+    resolution: {integrity: sha512-VhP4zEAacXS3dfTpJpJ88QdLqMTcabMg0jwpOSxZ/VzfQVfl3GkZSCZThhGC5uhq/TxPHPzW0dzr4H9Bb1OgKA==}
 
   '@hapi/hoek@9.3.0':
     resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==}
@@ -2895,6 +2902,8 @@ snapshots:
       svelte: 5.55.5
       typescript: 6.0.3
       valibot: 1.4.0(typescript@6.0.3)
+
+  '@formkit/auto-animate@0.9.0': {}
 
   '@hapi/hoek@9.3.0': {}
 

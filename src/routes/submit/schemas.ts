@@ -20,5 +20,9 @@ export const CreateNewClipSchema = v.object({
 			}
 		}, "please do not use discord cdn links"),
 		v.regex(/\.(mp4|webm|mov|mkv|avi)$/i, "url must be a valid video")
+	),
+	songs: v.pipe(
+		v.array(v.string()),
+		v.maxLength(12, "why do you have more than 12 songs in one video")
 	)
 });
