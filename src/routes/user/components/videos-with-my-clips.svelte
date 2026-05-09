@@ -28,6 +28,8 @@
 				>
 					{video.title}
 				</Button>
+			{:else}
+				<p>you haven't submitted any clips yet</p>
 			{/each}
 		</div>
 	</CardContent>
