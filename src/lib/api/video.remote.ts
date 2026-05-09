@@ -50,6 +50,22 @@ export const getVideos = query(async () => {
 	return allVideos;
 });
 
+export const getVideosWithMySubmissions = query(async () => {
+	const { user } = authGuard();
+
+	const allVideos = await db.query.video.findMany({
+		orderBy: {
+			createdAt: "asc"
+		},
+		where: {
+			clips: {
+				createdById: user.id
+			}
+		}
+	});
+	return allVideos;
+});
+
 /**
  * very good name i know
  */
@@ -84,6 +100,30 @@ export const getVideoById = query(
 		if (!queriedVideo) error(404);
 
 		return queriedVideo;
+	}
+);
+
+export const getMyClipsForVideo = query(
+	v.object({
+		videoId: v.string()
+	}),
+	async (params) => {
+		const { user } = authGuard();
+
+		const allClips = await db.query.clip.findMany({
+			where: {
+				videoId: params.videoId,
+				createdById: user.id
+			},
+			orderBy: {
+				createdAt: "asc"
+			},
+			with: {
+				creator: true
+			}
+		});
+
+		return allClips;
 	}
 );
 

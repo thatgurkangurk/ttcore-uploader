@@ -28,7 +28,7 @@
 
 	{#if session.current?.user}
 		<p>hi, {session.current.user.name}!</p>
-		{@render navLink("/user", "settings")}
+		{@render navLink("/user", "profile")}
 		<Button class="pl-0" variant="link" onclick={() => session.signOut()}>sign out</Button>
 	{:else}
 		<Button class="pl-0" variant="link" onclick={() => session.signInSocial("discord")}

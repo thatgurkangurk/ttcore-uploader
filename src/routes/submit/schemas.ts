@@ -1,11 +1,13 @@
 import * as v from "valibot";
 
+export const ClipTitleSchema = v.pipe(
+	v.string("please provide a title"),
+	v.minLength(4, "please provide a title longer than 4 characters"),
+	v.maxLength(48, "please provide a title shorter than 48 characters")
+);
+
 export const CreateNewClipSchema = v.object({
-	title: v.pipe(
-		v.string("please provide a title"),
-		v.minLength(4, "please provide a title longer than 4 characters"),
-		v.maxLength(48, "please provide a title shorter than 48 characters")
-	),
+	title: ClipTitleSchema,
 	profileOverride: v.nullish(v.pipe(v.string(), v.uuid())),
 	userOverride: v.nullish(v.pipe(v.string())),
 	url: v.pipe(
