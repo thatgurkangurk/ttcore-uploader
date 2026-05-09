@@ -22,6 +22,7 @@
 	import Trash2 from "@lucide/svelte/icons/trash-2";
 	import { setNewClipSongs } from "$lib/api/clip.remote.js";
 	import { watch } from "runed";
+	import { getVideoById } from "$lib/api/video.remote.js";
 
 	let open = $state(false);
 	const isDesktop = new MediaQuery("(min-width: 768px)");
@@ -140,12 +141,15 @@
 
 {#if isDesktop.current}
 	<Dialog.Root bind:open>
-		<Dialog.Trigger class={buttonVariants({ variant: "outline" })}>edit songs</Dialog.Trigger>
+		<Dialog.Trigger
+			disabled={!(await getVideoById({ videoId: clip.videoId })).submissionsOpen}
+			class={buttonVariants({ variant: "outline" })}>edit songs</Dialog.Trigger
+		>
 		<Dialog.Content class="sm:max-w-106.25">
 			<Dialog.Header>
-				<Dialog.Title>Edit profile</Dialog.Title>
+				<Dialog.Title>edit songs</Dialog.Title>
 				<Dialog.Description>
-					Make changes to your profile here. Click save when you're done.
+					edit the songs used here. click save when you're done
 				</Dialog.Description>
 			</Dialog.Header>
 			{@render content()}
@@ -153,12 +157,15 @@
 	</Dialog.Root>
 {:else}
 	<Drawer.Root bind:open>
-		<Drawer.Trigger class={buttonVariants({ variant: "outline" })}>edit songs</Drawer.Trigger>
+		<Drawer.Trigger
+			disabled={!(await getVideoById({ videoId: clip.videoId })).submissionsOpen}
+			class={buttonVariants({ variant: "outline" })}>edit songs</Drawer.Trigger
+		>
 		<Drawer.Content>
 			<Drawer.Header class="text-start">
-				<Drawer.Title>Edit profile</Drawer.Title>
+				<Drawer.Title>edit songs</Drawer.Title>
 				<Drawer.Description>
-					Make changes to your profile here. Click save when you're done.
+					edit the songs used here. click save when you're done
 				</Drawer.Description>
 			</Drawer.Header>
 			{@render content()}

@@ -17,6 +17,8 @@
 	import { setNewClipTitle } from "$lib/api/clip.remote.js";
 	import type { Clip } from "$lib/types/clip.js";
 	import EditSongs from "./edit-songs.svelte";
+	import { getVideoById } from "$lib/api/video.remote.js";
+	import X from "@lucide/svelte/icons/x";
 
 	type Props = {
 		clip: Clip;
@@ -75,8 +77,18 @@
 								required
 							>
 								{#snippet button()}
-									<Button type="submit" disabled={editTitleForm.isSubmitting}>
+									<Button size="icon" type="submit" disabled={editTitleForm.isSubmitting}>
 										<Save />
+									</Button>
+									<Button
+										onclick={() => {
+											reset(editTitleForm);
+											titleEditMode = false;
+										}}
+										size="icon"
+										variant="secondary"
+									>
+										<X />
 									</Button>
 								{/snippet}
 							</TextInput>
@@ -92,6 +104,7 @@
 						size="icon-sm"
 						variant="secondary"
 						class="shrink-0"
+						disabled={!(await getVideoById({ videoId: clip.videoId })).submissionsOpen}
 					>
 						<SquarePen />
 					</Button>
