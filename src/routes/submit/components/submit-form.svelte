@@ -140,6 +140,8 @@
 	<br />
 	<br />
 
+	<Label class="pb-2">songs used (in correct order, please!)</Label>
+
 	{#each songs, idx (idx)}
 		<div class="py-2">
 			<Label class={[!!createNewClip.fields.songs[idx].issues() && "text-destructive", "pb-2"]}>
