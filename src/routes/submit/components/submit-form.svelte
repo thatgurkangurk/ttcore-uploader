@@ -193,6 +193,8 @@
 		<Label class="pb-2">select a profile override</Label>
 		<div class="flex items-center gap-2">
 			<NativeSelect {...createNewClip.fields.profileOverride.as("select")}>
+				<NativeSelectOption value="">select a profile override</NativeSelectOption>
+
 				{#each profileValues as profile (profile.value)}
 					<NativeSelectOption value={profile.value}>{profile.label}</NativeSelectOption>
 				{/each}
@@ -210,6 +212,8 @@
 		<Label class="pb-2">select a user override</Label>
 		<div class="flex items-center gap-2">
 			<NativeSelect {...createNewClip.fields.userOverride.as("select")}>
+				<NativeSelectOption value="">select a user override</NativeSelectOption>
+
 				{#each userValues as user (user.value)}
 					<NativeSelectOption value={user.value}>{user.label}</NativeSelectOption>
 				{/each}
