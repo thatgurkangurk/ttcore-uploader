@@ -137,6 +137,9 @@
 		/>
 	</div>
 
+	<br />
+	<br />
+
 	{#each songs, idx (idx)}
 		<div class="py-2">
 			<Label class={[!!createNewClip.fields.songs[idx].issues() && "text-destructive", "pb-2"]}>
@@ -167,8 +170,6 @@
 					createNewClip.fields.songs[idx].issues()?.map((value) => value.message) ?? []
 				)}
 			/>
-
-			<Button type="button" onclick={() => removeSong(idx)}>Remove this song</Button>
 		</div>
 	{/each}
 
