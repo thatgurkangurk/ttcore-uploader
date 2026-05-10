@@ -10,6 +10,12 @@
 		AlertDialogHeader,
 		AlertDialogCancel
 	} from "$lib/components/ui/alert-dialog/index.js";
+	import {
+		Accordion,
+		AccordionItem,
+		AccordionContent,
+		AccordionTrigger
+	} from "$lib/components/ui/accordion/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import {
 		Card,
@@ -48,6 +54,18 @@
 		<p>
 			created by <span>{clip.creator!.name}</span>
 		</p>
+
+		{#if clip.note}
+			<Accordion type="single">
+				<AccordionItem value="item-1">
+					<AccordionTrigger>note</AccordionTrigger>
+					<AccordionContent class="whitespace-pre-wrap">
+						{clip.note}
+					</AccordionContent>
+				</AccordionItem>
+			</Accordion>
+		{/if}
+
 		<div class="flex flex-row gap-2">
 			<Button
 				disabled={!submissionsOpen}

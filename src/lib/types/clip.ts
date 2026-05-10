@@ -19,4 +19,5 @@ export type Clip = {
 		username: string;
 		admin: boolean;
 	} | null;
+	note: string | null;
 };

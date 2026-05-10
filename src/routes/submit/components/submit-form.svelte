@@ -28,6 +28,7 @@
 	import { getProfiles } from "$lib/api/profiles.remote";
 	import { getUsers } from "$lib/api/users.remote";
 	import { autoAnimate } from "$lib/attachments/auto-animate.svelte";
+	import Textarea from "$lib/components/form/textarea.svelte";
 
 	type Props = {
 		videoId: string;
@@ -75,7 +76,8 @@
 				url: output.url,
 				profileOverride: output.profileOverride,
 				userOverride: output.userOverride,
-				songs: output.songs
+				songs: output.songs,
+				note: output.note
 			});
 
 			reset(form);
@@ -133,87 +135,21 @@
 		{/snippet}
 	</Field>
 
-	{#if session.current?.user.admin}
-		<br />
+	<br />
 
-		<Field of={form} path={["profileOverride"]}>
-			{#snippet children(field)}
-				<Label class="pb-2">select a profile override</Label>
-				<div class="flex items-center gap-2">
-					<Select
-						type="single"
-						{...field.props}
-						value={field.input || undefined}
-						onValueChange={field.onInput}
-					>
-						<SelectTrigger class="w-fit"
-							>{profileValues.find((f) => f.value === field.input)?.label ??
-								"select a profile override"}</SelectTrigger
-						>
-						<SelectContent>
-							<SelectGroup>
-								<SelectLabel>profiles (line 1) - (line 2)</SelectLabel>
-								{#each profileValues as profile (profile.value)}
-									<SelectItem value={profile.value} label={profile.label}>
-										{profile.label}
-									</SelectItem>
-								{/each}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-					<Button
-						onclick={() =>
-							reset(form, {
-								path: ["profileOverride"]
-							})}
-						variant="destructive"
-						size="icon"
-					>
-						<Trash2 />
-					</Button>
-				</div>
-			{/snippet}
-		</Field>
-
-		<Field of={form} path={["userOverride"]}>
-			{#snippet children(field)}
-				<Label class="pb-2">select a user override</Label>
-				<div class="flex items-center gap-2">
-					<Select
-						type="single"
-						{...field.props}
-						value={field.input || undefined}
-						onValueChange={field.onInput}
-					>
-						<SelectTrigger class="w-fit"
-							>{userValues.find((f) => f.value === field.input)?.label ??
-								"select a user override"}</SelectTrigger
-						>
-						<SelectContent>
-							<SelectGroup>
-								<SelectLabel>users (display name) - (username)</SelectLabel>
-								{#each userValues as user (user.value)}
-									<SelectItem value={user.value} label={user.label}>
-										{user.label}
-									</SelectItem>
-								{/each}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-					<Button
-						onclick={() =>
-							reset(form, {
-								path: ["userOverride"]
-							})}
-						variant="destructive"
-						size="icon"
-					>
-						<Trash2 />
-					</Button>
-				</div>
-			{/snippet}
-		</Field>
-	{/if}
+	<Field of={form} path={["note"]}>
+		{#snippet children(field)}
+			<Textarea
+				{...field.props}
+				input={field.input}
+				errors={field.errors}
+				type="text"
+				label="note (optional)"
+				placeholder="..."
+				required
+			/>
+		{/snippet}
+	</Field>
 
 	<br />
 
@@ -283,7 +219,91 @@
 		{/snippet}
 	</FieldArray>
 
-	<br />
+	{#if session.current?.user.admin}
+		<br />
+		<br />
+
+		<Field of={form} path={["profileOverride"]}>
+			{#snippet children(field)}
+				<Label class="pb-2">select a profile override</Label>
+				<div class="flex items-center gap-2">
+					<Select
+						type="single"
+						{...field.props}
+						value={field.input || undefined}
+						onValueChange={field.onInput}
+					>
+						<SelectTrigger class="w-fit"
+							>{profileValues.find((f) => f.value === field.input)?.label ??
+								"select a profile override"}</SelectTrigger
+						>
+						<SelectContent>
+							<SelectGroup>
+								<SelectLabel>profiles (line 1) - (line 2)</SelectLabel>
+								{#each profileValues as profile (profile.value)}
+									<SelectItem value={profile.value} label={profile.label}>
+										{profile.label}
+									</SelectItem>
+								{/each}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+					<Button
+						onclick={() =>
+							reset(form, {
+								path: ["profileOverride"]
+							})}
+						variant="destructive"
+						size="icon"
+					>
+						<Trash2 />
+					</Button>
+				</div>
+			{/snippet}
+		</Field>
+
+		<br />
+
+		<Field of={form} path={["userOverride"]}>
+			{#snippet children(field)}
+				<Label class="pb-2">select a user override</Label>
+				<div class="flex items-center gap-2">
+					<Select
+						type="single"
+						{...field.props}
+						value={field.input || undefined}
+						onValueChange={field.onInput}
+					>
+						<SelectTrigger class="w-fit"
+							>{userValues.find((f) => f.value === field.input)?.label ??
+								"select a user override"}</SelectTrigger
+						>
+						<SelectContent>
+							<SelectGroup>
+								<SelectLabel>users (display name) - (username)</SelectLabel>
+								{#each userValues as user (user.value)}
+									<SelectItem value={user.value} label={user.label}>
+										{user.label}
+									</SelectItem>
+								{/each}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+					<Button
+						onclick={() =>
+							reset(form, {
+								path: ["userOverride"]
+							})}
+						variant="destructive"
+						size="icon"
+					>
+						<Trash2 />
+					</Button>
+				</div>
+			{/snippet}
+		</Field>
+	{/if}
+
 	<br />
 
 	<Button
