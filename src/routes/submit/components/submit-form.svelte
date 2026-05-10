@@ -1,34 +1,18 @@
 <script lang="ts">
-	import {
-		createForm,
-		Field,
-		FieldArray,
-		Form,
-		insert,
-		remove,
-		reset,
-		type SubmitHandler
-	} from "@formisch/svelte";
-	import { CreateNewClipSchema } from "../schemas";
-	import TextInput from "$lib/components/form/text-input.svelte";
+	import { CreateNewClipArgs } from "../schemas";
 	import { Button } from "$lib/components/ui/button";
-	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
+	import { NativeSelect, NativeSelectOption } from "$lib/components/ui/native-select/index.js";
 	import { createNewClip } from "$lib/api/clip.remote";
-	import {
-		Select,
-		SelectContent,
-		SelectGroup,
-		SelectItem,
-		SelectLabel,
-		SelectTrigger
-	} from "$lib/components/ui/select/index.js";
 	import { Label } from "$lib/components/ui/label";
 	import Trash2 from "@lucide/svelte/icons/trash-2";
 	import { useSession } from "$lib/session.svelte";
 	import { getProfiles } from "$lib/api/profiles.remote";
 	import { getUsers } from "$lib/api/users.remote";
-	import { autoAnimate } from "$lib/attachments/auto-animate.svelte";
-	import Textarea from "$lib/components/form/textarea.svelte";
+	import { ButtonGroup } from "$lib/components/ui/button-group/index.js";
+	import { Input } from "$lib/components/ui/input";
+	import InputErrors from "$lib/components/form/input-errors.svelte";
+	import { toErrors } from "$lib/utils/to-errors";
+	import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
 	type Props = {
 		videoId: string;
@@ -64,31 +48,21 @@
 		}));
 	});
 
-	const form = createForm({
-		schema: CreateNewClipSchema
-	});
+	let songs = $state<string[]>([]);
+	createNewClip.fields.songs.set(songs);
 
-	const submitForm: SubmitHandler<typeof CreateNewClipSchema> = async (output) => {
-		try {
-			await createNewClip({
-				videoId: videoId,
-				title: output.title,
-				url: output.url,
-				profileOverride: output.profileOverride,
-				userOverride: output.userOverride,
-				songs: output.songs,
-				note: output.note
-			});
+	function addSong() {
+		if (songs.length >= 12) return;
+		songs.push("");
+	}
 
-			reset(form);
-		} catch (err) {
-			if (err instanceof Error) {
-				alert(err.message);
-			} else {
-				alert("unknown error");
-			}
-		}
-	};
+	function removeSong(indexToRemove: number) {
+		songs.splice(indexToRemove, 1);
+	}
+
+	function removeAllSongs() {
+		songs.length = 0;
+	}
 </script>
 
 <br />
@@ -106,214 +80,149 @@
 
 <br />
 
-<Form of={form} onsubmit={submitForm}>
-	<Field of={form} path={["title"]}>
-		{#snippet children(field)}
-			<TextInput
-				{...field.props}
-				input={field.input}
-				errors={field.errors}
-				type="text"
-				label="title"
-				placeholder="my amazing clip"
-				required
-			/>
-		{/snippet}
-	</Field>
+<form
+	{...createNewClip.preflight(CreateNewClipArgs)}
+	oninput={() => createNewClip.validate({ includeUntouched: false })}
+	enctype="multipart/form-data"
+>
+	<input {...createNewClip.fields.videoId.as("hidden", videoId)} />
+
+	<div>
+		<Label class={[!!createNewClip.fields.title.issues() && "text-destructive", "pb-2"]}
+			>title</Label
+		>
+		<Input
+			{...createNewClip.fields.title.as("text")}
+			aria-errormessage="{createNewClip.fields.title.as('text').name}-error"
+			aria-invalid={!!createNewClip.fields.title.issues()}
+			placeholder="my amazing clip"
+		/>
+
+		<InputErrors
+			name={createNewClip.fields.title.as("text").name}
+			errors={toErrors(createNewClip.fields.title.issues()?.map((value) => value.message) ?? [])}
+		/>
+	</div>
 	<br />
-	<Field of={form} path={["url"]}>
-		{#snippet children(field)}
-			<TextInput
-				{...field.props}
-				input={field.input}
-				errors={field.errors}
-				type="text"
-				label="direct link to a video"
-				placeholder="https://my.clip.host/clip.mp4"
-				required
+	<div>
+		<Label class={[!!createNewClip.fields.url.issues() && "text-destructive", "pb-2"]}
+			>direct link to a video</Label
+		>
+		<Input
+			{...createNewClip.fields.url.as("url")}
+			aria-errormessage="{createNewClip.fields.url.as('url').name}-error"
+			aria-invalid={!!createNewClip.fields.url.issues()}
+			placeholder="https://my.clip.host/clip.mp4"
+		/>
+
+		<InputErrors
+			name={createNewClip.fields.url.as("url").name}
+			errors={toErrors(createNewClip.fields.url.issues()?.map((value) => value.message) ?? [])}
+		/>
+	</div>
+	<br />
+	<div>
+		<Label class={[!!createNewClip.fields.note.issues() && "text-destructive", "pb-2"]}
+			>note (optional)</Label
+		>
+		<Textarea
+			{...createNewClip.fields.note.as("text")}
+			aria-errormessage="{createNewClip.fields.note.as('text').name}-error"
+			aria-invalid={!!createNewClip.fields.note.issues()}
+		/>
+
+		<InputErrors
+			name={createNewClip.fields.note.as("text").name}
+			errors={toErrors(createNewClip.fields.note.issues()?.map((value) => value.message) ?? [])}
+		/>
+	</div>
+
+	{#each songs, idx (idx)}
+		<div class="py-2">
+			<Label class={[!!createNewClip.fields.songs[idx].issues() && "text-destructive", "pb-2"]}>
+				song {idx + 1}
+			</Label>
+
+			<ButtonGroup>
+				<Input
+					{...createNewClip.fields.songs[idx].as("text")}
+					aria-errormessage="{createNewClip.fields.songs[idx].as('text').name}-error"
+					aria-invalid={!!createNewClip.fields.songs[idx].issues()}
+				/>
+				<Button
+					variant="destructive"
+					type="submit"
+					disabled={!!createNewClip.pending}
+					onclick={() => {
+						removeSong(idx);
+					}}
+				>
+					<Trash2 />
+				</Button>
+			</ButtonGroup>
+
+			<InputErrors
+				name={createNewClip.fields.songs[idx].as("text").name}
+				errors={toErrors(
+					createNewClip.fields.songs[idx].issues()?.map((value) => value.message) ?? []
+				)}
 			/>
-		{/snippet}
-	</Field>
+
+			<Button type="button" onclick={() => removeSong(idx)}>Remove this song</Button>
+		</div>
+	{/each}
+
+	<Button type="button" disabled={songs.length >= 12} onclick={addSong}>add song</Button>
+
+	<Button
+		type="button"
+		variant="destructive"
+		disabled={songs.length === 0}
+		onclick={removeAllSongs}
+	>
+		remove all songs
+	</Button>
 
 	<br />
-
-	<Field of={form} path={["note"]}>
-		{#snippet children(field)}
-			<Textarea
-				{...field.props}
-				input={field.input}
-				errors={field.errors}
-				type="text"
-				label="note (optional)"
-				placeholder="..."
-				required
-			/>
-		{/snippet}
-	</Field>
-
-	<br />
-
-	<FieldArray of={form} path={["songs"]}>
-		{#snippet children(fieldArray)}
-			{@const songCount = fieldArray.items.length}
-
-			<Label class="pb-2">songs used (in correct order, please!)</Label>
-			<div {@attach autoAnimate({ duration: 150 })}>
-				{#each fieldArray.items as item, index (item)}
-					<div class="py-2">
-						<Field of={form} path={["songs", index]}>
-							{#snippet children(field)}
-								<TextInput
-									{...field.props}
-									input={field.input}
-									errors={field.errors}
-									type="text"
-									label="song {index + 1}"
-									placeholder="artist - song title"
-									required
-								>
-									{#snippet button()}
-										<Button
-											size="icon"
-											variant="destructive"
-											type="submit"
-											disabled={form.isSubmitting}
-											onclick={() => {
-												remove(form, {
-													path: ["songs"],
-													at: index
-												});
-											}}
-										>
-											<Trash2 />
-										</Button>
-									{/snippet}
-								</TextInput>
-							{/snippet}
-						</Field>
-					</div>
-				{/each}
-			</div>
-
-			<Button
-				disabled={songCount >= 12}
-				onclick={() =>
-					insert(form, {
-						path: ["songs"],
-						initialInput: ""
-					})}
-			>
-				add song
-			</Button>
-			<Button
-				variant="destructive"
-				disabled={songCount === 0}
-				onclick={() =>
-					reset(form, {
-						path: ["songs"],
-						initialInput: []
-					})}
-			>
-				remove all songs
-			</Button>
-		{/snippet}
-	</FieldArray>
 
 	{#if session.current?.user.admin}
 		<br />
 		<br />
 
-		<Field of={form} path={["profileOverride"]}>
-			{#snippet children(field)}
-				<Label class="pb-2">select a profile override</Label>
-				<div class="flex items-center gap-2">
-					<Select
-						type="single"
-						{...field.props}
-						value={field.input || undefined}
-						onValueChange={field.onInput}
-					>
-						<SelectTrigger class="w-fit"
-							>{profileValues.find((f) => f.value === field.input)?.label ??
-								"select a profile override"}</SelectTrigger
-						>
-						<SelectContent>
-							<SelectGroup>
-								<SelectLabel>profiles (line 1) - (line 2)</SelectLabel>
-								{#each profileValues as profile (profile.value)}
-									<SelectItem value={profile.value} label={profile.label}>
-										{profile.label}
-									</SelectItem>
-								{/each}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-					<Button
-						onclick={() =>
-							reset(form, {
-								path: ["profileOverride"]
-							})}
-						variant="destructive"
-						size="icon"
-					>
-						<Trash2 />
-					</Button>
-				</div>
-			{/snippet}
-		</Field>
+		<Label class="pb-2">select a profile override</Label>
+		<div class="flex items-center gap-2">
+			<NativeSelect {...createNewClip.fields.profileOverride.as("select")}>
+				{#each profileValues as profile (profile.value)}
+					<NativeSelectOption value={profile.value}>{profile.label}</NativeSelectOption>
+				{/each}
+			</NativeSelect>
 
-		<br />
+			<Button
+				onclick={() => createNewClip.fields.profileOverride.set(undefined)}
+				variant="destructive"
+				size="icon"
+			>
+				<Trash2 />
+			</Button>
+		</div>
 
-		<Field of={form} path={["userOverride"]}>
-			{#snippet children(field)}
-				<Label class="pb-2">select a user override</Label>
-				<div class="flex items-center gap-2">
-					<Select
-						type="single"
-						{...field.props}
-						value={field.input || undefined}
-						onValueChange={field.onInput}
-					>
-						<SelectTrigger class="w-fit"
-							>{userValues.find((f) => f.value === field.input)?.label ??
-								"select a user override"}</SelectTrigger
-						>
-						<SelectContent>
-							<SelectGroup>
-								<SelectLabel>users (display name) - (username)</SelectLabel>
-								{#each userValues as user (user.value)}
-									<SelectItem value={user.value} label={user.label}>
-										{user.label}
-									</SelectItem>
-								{/each}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-					<Button
-						onclick={() =>
-							reset(form, {
-								path: ["userOverride"]
-							})}
-						variant="destructive"
-						size="icon"
-					>
-						<Trash2 />
-					</Button>
-				</div>
-			{/snippet}
-		</Field>
+		<Label class="pb-2">select a user override</Label>
+		<div class="flex items-center gap-2">
+			<NativeSelect {...createNewClip.fields.userOverride.as("select")}>
+				{#each userValues as user (user.value)}
+					<NativeSelectOption value={user.value}>{user.label}</NativeSelectOption>
+				{/each}
+			</NativeSelect>
+
+			<Button
+				onclick={() => createNewClip.fields.userOverride.set(undefined)}
+				variant="destructive"
+				size="icon"
+			>
+				<Trash2 />
+			</Button>
+		</div>
 	{/if}
 
-	<br />
-
-	<Button
-		class="w-fit"
-		disabled={!form.isDirty || !form.isValid || form.isSubmitting}
-		type="submit"
-	>
-		{#if form.isSubmitting}
-			<LoaderCircle class="animate-spin" />
-		{/if}
-		submit
-	</Button>
-</Form>
+	<Button type="submit">submit</Button>
+</form>

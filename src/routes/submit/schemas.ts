@@ -13,8 +13,8 @@ export const SongsSchema = v.pipe(
 
 export const CreateNewClipSchema = v.object({
 	title: ClipTitleSchema,
-	profileOverride: v.nullish(v.pipe(v.string(), v.uuid())),
-	userOverride: v.nullish(v.pipe(v.string())),
+	profileOverride: v.optional(v.pipe(v.string(), v.uuid())),
+	userOverride: v.optional(v.pipe(v.string())),
 	url: v.pipe(
 		v.string("please provide a url"),
 		v.url("please provide a valid url"),
@@ -35,5 +35,10 @@ export const CreateNewClipSchema = v.object({
 			v.maxLength(1024, "please provide a note shorter than 1024 characters")
 		)
 	),
-	songs: SongsSchema
+	songs: v.optional(SongsSchema, [])
+});
+
+export const CreateNewClipArgs = v.object({
+	videoId: v.pipe(v.string(), v.ulid()),
+	...CreateNewClipSchema.entries
 });
