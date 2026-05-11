@@ -49,7 +49,14 @@ export const CreateNewClipSchema = v.object({
 		])
 	),
 	url: ClipUrlSchema,
-	note: v.optional(ClipNoteSchema),
+	note: v.optional(
+		v.pipe(
+			// allow either the valid note schema OR an exact empty string
+			v.union([ClipNoteSchema, v.literal("")]),
+			// treat empty string as undefined
+			v.transform((val) => (val === "" ? undefined : val))
+		)
+	),
 	songs: v.optional(SongsSchema, [])
 });
 
