@@ -83,7 +83,7 @@
 
 <form
 	{...createNewClip.preflight(CreateNewClipArgs)}
-	oninput={() => createNewClip.validate({ includeUntouched: false })}
+	oninput={() => createNewClip.validate({ includeUntouched: false, preflightOnly: true })}
 	enctype="multipart/form-data"
 >
 	<input {...createNewClip.fields.videoId.as("hidden", videoId)} />

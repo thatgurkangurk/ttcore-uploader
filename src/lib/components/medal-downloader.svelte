@@ -11,7 +11,7 @@
 <form
 	class="py-2"
 	{...medalDownloader.preflight(MedalDownloaderSchema)}
-	oninput={() => medalDownloader.validate({ includeUntouched: false })}
+	oninput={() => medalDownloader.validate({ includeUntouched: false, preflightOnly: true })}
 	enctype="multipart/form-data"
 >
 	<div>
