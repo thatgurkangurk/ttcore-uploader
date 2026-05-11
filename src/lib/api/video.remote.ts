@@ -90,7 +90,7 @@ export const getVideoById = query(
 		videoId: v.string()
 	}),
 	async (data) => {
-		adminOnlyGuard();
+		authGuard();
 		const queriedVideo = await db.query.video.findFirst({
 			where: {
 				id: data.videoId
