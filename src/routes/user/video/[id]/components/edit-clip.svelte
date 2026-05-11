@@ -26,10 +26,12 @@
 
 	let { clip }: Props = $props();
 
+	const form = $derived(updateClip.for(clip.id));
+
 	// svelte-ignore state_referenced_locally
 	let songs = $state<string[]>([...clip.songs]);
 	// svelte-ignore state_referenced_locally
-	updateClip.fields.songs.set(songs);
+	form.fields.songs.set(songs);
 
 	watch(
 		() => clip.songs,
@@ -54,42 +56,41 @@
 
 {#snippet content()}
 	<form
-		{...updateClip.preflight(UpdateClipArgs)}
-		oninput={() => updateClip.validate({ includeUntouched: false, preflightOnly: true })}
+		{...form.preflight(UpdateClipArgs)}
+		oninput={() => form.validate({ includeUntouched: false, preflightOnly: true })}
 		enctype="multipart/form-data"
 	>
-		<input {...updateClip.fields.clipId.as("hidden", clip.id)} />
+		<input {...form.fields.clipId.as("hidden", clip.id)} />
 
 		<div>
-			<Label class={[!!updateClip.fields.title.issues() && "text-destructive", "pb-2"]}>title</Label
-			>
+			<Label class={[!!form.fields.title.issues() && "text-destructive", "pb-2"]}>title</Label>
 			<Input
-				{...updateClip.fields.title.as("text", clip.title)}
-				aria-errormessage="{updateClip.fields.title.as('text').name}-error"
-				aria-invalid={!!updateClip.fields.title.issues()}
+				{...form.fields.title.as("text", clip.title)}
+				aria-errormessage="{form.fields.title.as('text').name}-error"
+				aria-invalid={!!form.fields.title.issues()}
 				placeholder="my amazing clip"
 			/>
 
 			<InputErrors
-				name={updateClip.fields.title.as("text").name}
-				errors={toErrors(updateClip.fields.title.issues()?.map((value) => value.message) ?? [])}
+				name={form.fields.title.as("text").name}
+				errors={toErrors(form.fields.title.issues()?.map((value) => value.message) ?? [])}
 			/>
 		</div>
 		<br />
 		<div>
-			<Label class={[!!updateClip.fields.note.issues() && "text-destructive", "pb-2"]}
+			<Label class={[!!form.fields.note.issues() && "text-destructive", "pb-2"]}
 				>note (optional)</Label
 			>
 			<Textarea
-				{...updateClip.fields.note.as("text", clip.note ?? "")}
-				aria-errormessage="{updateClip.fields.note.as('text').name}-error"
-				aria-invalid={!!updateClip.fields.note.issues()}
+				{...form.fields.note.as("text", clip.note ?? "")}
+				aria-errormessage="{form.fields.note.as('text').name}-error"
+				aria-invalid={!!form.fields.note.issues()}
 				defaultValue={clip.note ?? ""}
 			/>
 
 			<InputErrors
-				name={updateClip.fields.note.as("text").name}
-				errors={toErrors(updateClip.fields.note.issues()?.map((value) => value.message) ?? [])}
+				name={form.fields.note.as("text").name}
+				errors={toErrors(form.fields.note.issues()?.map((value) => value.message) ?? [])}
 			/>
 		</div>
 
@@ -101,21 +102,21 @@
 		<div {@attach autoAnimate({ duration: 150 })}>
 			{#each songs, idx (idx)}
 				<div class="py-2">
-					<Label class={[!!updateClip.fields.songs[idx].issues() && "text-destructive", "pb-2"]}>
+					<Label class={[!!form.fields.songs[idx].issues() && "text-destructive", "pb-2"]}>
 						song {idx + 1}
 					</Label>
 
 					<ButtonGroup>
 						<Input
-							{...updateClip.fields.songs[idx].as("text", songs[idx])}
-							aria-errormessage="{updateClip.fields.songs[idx].as('text').name}-error"
-							aria-invalid={!!updateClip.fields.songs[idx].issues()}
+							{...form.fields.songs[idx].as("text", songs[idx])}
+							aria-errormessage="{form.fields.songs[idx].as('text').name}-error"
+							aria-invalid={!!form.fields.songs[idx].issues()}
 						/>
 
 						<Button
 							variant="destructive"
 							type="button"
-							disabled={!!updateClip.pending}
+							disabled={!!form.pending}
 							onclick={() => {
 								removeSong(idx);
 							}}
@@ -125,10 +126,8 @@
 					</ButtonGroup>
 
 					<InputErrors
-						name={updateClip.fields.songs[idx].as("text").name}
-						errors={toErrors(
-							updateClip.fields.songs[idx].issues()?.map((value) => value.message) ?? []
-						)}
+						name={form.fields.songs[idx].as("text").name}
+						errors={toErrors(form.fields.songs[idx].issues()?.map((value) => value.message) ?? [])}
 					/>
 				</div>
 			{/each}
@@ -147,7 +146,7 @@
 
 		<br />
 
-		<Button type="submit" disabled={!!updateClip.pending}>submit</Button>
+		<Button type="submit" disabled={!!form.pending}>submit</Button>
 	</form>
 {/snippet}
 
