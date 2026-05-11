@@ -9,8 +9,25 @@ export const ClipTitleSchema = v.pipe(
 
 export const CreateNewClipSchema = v.object({
 	title: ClipTitleSchema,
-	profileOverride: v.optional(v.pipe(v.string(), v.uuid())),
-	userOverride: v.optional(v.pipe(v.string())),
+	profileOverride: v.optional(
+		v.union([
+			v.pipe(
+				v.literal(""),
+				v.transform(() => undefined)
+			),
+			v.pipe(v.string(), v.uuid())
+		])
+	),
+
+	userOverride: v.optional(
+		v.union([
+			v.pipe(
+				v.literal(""),
+				v.transform(() => undefined)
+			),
+			v.pipe(v.string(), v.minLength(1))
+		])
+	),
 	url: v.pipe(
 		v.string("please provide a url"),
 		v.url("please provide a valid url"),

@@ -198,7 +198,7 @@
 
 		<Label class="pb-2">select a profile override</Label>
 		<div class="flex items-center gap-2">
-			<NativeSelect {...createNewClip.fields.profileOverride.as("select")}>
+			<NativeSelect {...createNewClip.fields.profileOverride.as("select", "")}>
 				<NativeSelectOption value="">select a profile override</NativeSelectOption>
 
 				{#each profileValues as profile (profile.value)}
@@ -214,10 +214,18 @@
 				<Trash2 />
 			</Button>
 		</div>
+		<InputErrors
+			name={createNewClip.fields.profileOverride.as("select").name}
+			errors={toErrors(
+				createNewClip.fields.profileOverride.issues()?.map((value) => value.message) ?? []
+			)}
+		/>
+
+		<br />
 
 		<Label class="pb-2">select a user override</Label>
 		<div class="flex items-center gap-2">
-			<NativeSelect {...createNewClip.fields.userOverride.as("select")}>
+			<NativeSelect {...createNewClip.fields.userOverride.as("select", "")}>
 				<NativeSelectOption value="">select a user override</NativeSelectOption>
 
 				{#each userValues as user (user.value)}
@@ -229,11 +237,20 @@
 				onclick={() => createNewClip.fields.userOverride.set("")}
 				variant="destructive"
 				size="icon"
+				disabled={createNewClip.fields.userOverride.value() === ""}
 			>
 				<Trash2 />
 			</Button>
 		</div>
+		<InputErrors
+			name={createNewClip.fields.userOverride.as("select").name}
+			errors={toErrors(
+				createNewClip.fields.userOverride.issues()?.map((value) => value.message) ?? []
+			)}
+		/>
 	{/if}
 
-	<Button type="submit">submit</Button>
+	<br />
+
+	<Button type="submit" disabled={!!createNewClip.pending}>submit</Button>
 </form>

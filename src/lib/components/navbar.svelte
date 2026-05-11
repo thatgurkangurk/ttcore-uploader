@@ -19,6 +19,7 @@
 
 	{@render navLink("/", "home")}
 	{@render navLink("/submit", "submit")}
+	{@render navLink("/download", "medal")}
 
 	{#if session.current?.user.admin}
 		{@render navLink("/admin", "admin")}

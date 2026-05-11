@@ -25,7 +25,7 @@
 
 {#if data.details.submissionsOpen}
 	<h1 class="text-2xl font-bold tracking-tight md:text-3xl">
-		please submit your videos for {data.details.title}
+		{data.details.title}
 	</h1>
 
 	<Alert>
