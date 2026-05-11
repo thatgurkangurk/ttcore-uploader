@@ -60,30 +60,38 @@
 </script>
 
 {#snippet content()}
-	{#if !(await getVideoById( { videoId: clip.videoId } )).submissionsOpen && session.current?.user.admin}
-		<Alert variant="destructive">
-			<CircleAlert />
-			<AlertTitle>scary</AlertTitle>
-			<AlertDescription>
-				you are using super spooky scary admin powers to do this (the submissions are closed)
-				<br />
-				<br />
-				scary i know
-			</AlertDescription>
-		</Alert>
-	{/if}
+	{#if session.current?.user.admin}
+		<div class="mb-4 flex flex-col gap-4">
+			{#if !(await getVideoById({ videoId: clip.videoId })).submissionsOpen}
+				<Alert variant="destructive">
+					<CircleAlert />
+					<AlertTitle>scary</AlertTitle>
+					<AlertDescription>
+						you are using super spooky scary admin powers to do this <strong
+							>(the submissions are closed)</strong
+						>
+						<br />
+						<br />
+						scary i know
+					</AlertDescription>
+				</Alert>
+			{/if}
 
-	{#if clip.createdById !== session.current?.user.id && session.current?.user.admin}
-		<Alert variant="destructive">
-			<CircleAlert />
-			<AlertTitle>scary</AlertTitle>
-			<AlertDescription>
-				you are using super spooky scary admin powers to do this (you don't own this clip)
-				<br />
-				<br />
-				scary i know
-			</AlertDescription>
-		</Alert>
+			{#if clip.createdById !== session.current?.user.id}
+				<Alert variant="destructive">
+					<CircleAlert />
+					<AlertTitle>scary</AlertTitle>
+					<AlertDescription>
+						you are using super spooky scary admin powers to do this <strong
+							>(you don't own this clip)</strong
+						>
+						<br />
+						<br />
+						scary i know
+					</AlertDescription>
+				</Alert>
+			{/if}
+		</div>
 	{/if}
 
 	<form
