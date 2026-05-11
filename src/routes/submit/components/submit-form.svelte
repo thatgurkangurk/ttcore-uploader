@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CreateNewClipArgs } from "../schemas";
+	import { CreateNewClipArgs } from "$lib/schemas/clip.js";
 	import { Button } from "$lib/components/ui/button";
 	import { NativeSelect, NativeSelectOption } from "$lib/components/ui/native-select/index.js";
 	import { createNewClip } from "$lib/api/clip.remote";

@@ -7,7 +7,8 @@ import { error, invalid } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import * as v from "valibot";
 
-import { ClipTitleSchema, CreateNewClipArgs, SongsSchema } from "../../routes/submit/schemas";
+import { ClipTitleSchema, CreateNewClipArgs } from "$lib/schemas/clip.js";
+import { SongsSchema } from "$lib/schemas/song.js";
 import { authGuard, adminOnlyGuard } from "./utils";
 import { getClipsForVideo, getMyClipsForVideo } from "./video.remote";
 

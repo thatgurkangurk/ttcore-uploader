@@ -1,31 +1,16 @@
 <script lang="ts">
-	import * as v from "valibot";
 	import { createForm, Field, Form, reset, type SubmitHandler } from "@formisch/svelte";
 	import TextInput from "$lib/components/form/text-input.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 	import { toast } from "svelte-sonner";
-
-	const formSchema = v.object({
-		url: v.pipe(
-			v.string("please provide a url"),
-			v.url("please provide a valid url"),
-			v.check((value) => {
-				try {
-					const parsed = new URL(value);
-					return parsed.hostname === "medal.tv";
-				} catch {
-					return false;
-				}
-			}, "please provide a medal link")
-		)
-	});
+	import { MedalDownloaderSchema } from "$lib/schemas/medal-downloader.js";
 
 	const form = createForm({
-		schema: formSchema
+		schema: MedalDownloaderSchema
 	});
 
-	const submitForm: SubmitHandler<typeof formSchema> = async (output) => {
+	const submitForm: SubmitHandler<typeof MedalDownloaderSchema> = async (output) => {
 		try {
 			const res = await fetch(`/api/download-video?videoUrl=${encodeURIComponent(output.url)}`);
 			if (!res.ok) throw new Error("network response was not ok");

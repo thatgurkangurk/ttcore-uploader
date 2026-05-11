@@ -2,12 +2,6 @@
 	import { resolve } from "$app/paths";
 	import { getVideos } from "$lib/api/video.remote";
 	import { Button } from "$lib/components/ui/button/index.js";
-	import { useSession } from "$lib/session.svelte";
-	import type { PageProps } from "./$types";
-
-	let { data }: PageProps = $props();
-
-	const session = useSession();
 
 	const videos = $derived(await getVideos());
 

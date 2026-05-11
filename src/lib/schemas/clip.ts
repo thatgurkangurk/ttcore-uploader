@@ -1,14 +1,10 @@
 import * as v from "valibot";
+import { SongsSchema } from "./song";
 
 export const ClipTitleSchema = v.pipe(
 	v.string("please provide a title"),
 	v.minLength(4, "please provide a title longer than 4 characters"),
 	v.maxLength(48, "please provide a title shorter than 48 characters")
-);
-
-export const SongsSchema = v.pipe(
-	v.array(v.string()),
-	v.maxLength(12, "why do you have more than 12 songs in one video")
 );
 
 export const CreateNewClipSchema = v.object({

@@ -5,7 +5,7 @@
 	import { Label } from "$lib/components/ui/label/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as v from "valibot";
-	import { SongsSchema } from "../../../../submit/schemas.js";
+	import { SongsSchema } from "$lib/schemas/song.js";
 	import type { Clip } from "$lib/types/clip.js";
 	import {
 		createForm,
