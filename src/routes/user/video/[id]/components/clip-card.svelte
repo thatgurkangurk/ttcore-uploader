@@ -11,7 +11,6 @@
 	import SquarePen from "@lucide/svelte/icons/square-pen";
 	import Save from "@lucide/svelte/icons/save";
 	import * as v from "valibot";
-	import { ClipTitleSchema } from "../../../../submit/schemas.js";
 	import TextInput from "$lib/components/form/text-input.svelte";
 	import { watch } from "runed";
 	import { setNewClipTitle } from "$lib/api/clip.remote.js";
@@ -19,6 +18,7 @@
 	import EditSongs from "./edit-songs.svelte";
 	import { getVideoById } from "$lib/api/video.remote.js";
 	import X from "@lucide/svelte/icons/x";
+	import { ClipTitleSchema } from "$lib/schemas/clip.js";
 
 	type Props = {
 		clip: Clip;
