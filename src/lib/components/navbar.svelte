@@ -9,9 +9,13 @@
 
 {#snippet navLink(to: string, label: string)}
 	{@const active = page.url.pathname === to}
-	<Button variant="link" class={["p-0", active ? "text-primary underline" : "text-white"]} href={to}
-		>{label}</Button
+	<Button
+		variant="link"
+		class={["p-0", active ? "text-primary underline" : "text-white"]}
+		href={to}
 	>
+		{label}
+	</Button>
 {/snippet}
 
 <div class="flex flex-row items-center gap-3">
@@ -31,8 +35,8 @@
 		{@render navLink("/user", "profile")}
 		<Button class="pl-0" variant="link" onclick={() => session.signOut()}>sign out</Button>
 	{:else}
-		<Button class="pl-0" variant="link" onclick={() => session.signInSocial("discord")}
-			>sign in with Discord</Button
-		>
+		<Button class="pl-0" variant="link" onclick={() => session.signInSocial("discord")}>
+			sign in with Discord
+		</Button>
 	{/if}
 </div>
