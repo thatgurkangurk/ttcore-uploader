@@ -27,7 +27,7 @@
 	let { clip }: Props = $props();
 
 	// svelte-ignore state_referenced_locally
-	let songs = $state<string[]>(clip.songs);
+	let songs = $state<string[]>([...clip.songs]);
 	// svelte-ignore state_referenced_locally
 	updateClip.fields.songs.set(songs);
 
@@ -107,7 +107,7 @@
 
 					<ButtonGroup>
 						<Input
-							{...updateClip.fields.songs[idx].as("text", clip.songs[idx])}
+							{...updateClip.fields.songs[idx].as("text", songs[idx])}
 							aria-errormessage="{updateClip.fields.songs[idx].as('text').name}-error"
 							aria-invalid={!!updateClip.fields.songs[idx].issues()}
 						/>
