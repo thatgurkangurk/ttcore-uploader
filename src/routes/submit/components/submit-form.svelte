@@ -13,6 +13,7 @@
 	import InputErrors from "$lib/components/form/input-errors.svelte";
 	import { toErrors } from "$lib/utils/to-errors";
 	import Textarea from "$lib/components/ui/textarea/textarea.svelte";
+	import { autoAnimate } from "$lib/attachments/auto-animate.svelte";
 
 	type Props = {
 		videoId: string;
@@ -142,38 +143,40 @@
 
 	<Label class="pb-2">songs used (in correct order, please!)</Label>
 
-	{#each songs, idx (idx)}
-		<div class="py-2">
-			<Label class={[!!createNewClip.fields.songs[idx].issues() && "text-destructive", "pb-2"]}>
-				song {idx + 1}
-			</Label>
+	<div {@attach autoAnimate({ duration: 150 })}>
+		{#each songs, idx (idx)}
+			<div class="py-2">
+				<Label class={[!!createNewClip.fields.songs[idx].issues() && "text-destructive", "pb-2"]}>
+					song {idx + 1}
+				</Label>
 
-			<ButtonGroup>
-				<Input
-					{...createNewClip.fields.songs[idx].as("text")}
-					aria-errormessage="{createNewClip.fields.songs[idx].as('text').name}-error"
-					aria-invalid={!!createNewClip.fields.songs[idx].issues()}
+				<ButtonGroup>
+					<Input
+						{...createNewClip.fields.songs[idx].as("text")}
+						aria-errormessage="{createNewClip.fields.songs[idx].as('text').name}-error"
+						aria-invalid={!!createNewClip.fields.songs[idx].issues()}
+					/>
+					<Button
+						variant="destructive"
+						type="button"
+						disabled={!!createNewClip.pending}
+						onclick={() => {
+							removeSong(idx);
+						}}
+					>
+						<Trash2 />
+					</Button>
+				</ButtonGroup>
+
+				<InputErrors
+					name={createNewClip.fields.songs[idx].as("text").name}
+					errors={toErrors(
+						createNewClip.fields.songs[idx].issues()?.map((value) => value.message) ?? []
+					)}
 				/>
-				<Button
-					variant="destructive"
-					type="submit"
-					disabled={!!createNewClip.pending}
-					onclick={() => {
-						removeSong(idx);
-					}}
-				>
-					<Trash2 />
-				</Button>
-			</ButtonGroup>
-
-			<InputErrors
-				name={createNewClip.fields.songs[idx].as("text").name}
-				errors={toErrors(
-					createNewClip.fields.songs[idx].issues()?.map((value) => value.message) ?? []
-				)}
-			/>
-		</div>
-	{/each}
+			</div>
+		{/each}
+	</div>
 
 	<Button type="button" disabled={songs.length >= 12} onclick={addSong}>add song</Button>
 
