@@ -4,10 +4,10 @@ import { db } from "$lib/server/db";
 import { clip } from "$lib/server/db/schema/clip";
 import { EmbedBuilder } from "@discordjs/builders";
 import { error, invalid } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import * as v from "valibot";
 
-import { ClipTitleSchema, CreateNewClipArgs } from "$lib/schemas/clip.js";
+import { ClipTitleSchema, CreateNewClipArgs, UpdateClipArgs } from "$lib/schemas/clip.js";
 import { SongsSchema } from "$lib/schemas/song.js";
 import { authGuard, adminOnlyGuard } from "./utils";
 import { getClipsForVideo, getMyClipsForVideo } from "./video.remote";
@@ -103,6 +103,38 @@ export const createNewClip = form(CreateNewClipArgs, async (data) => {
 			})
 		});
 	}
+});
+
+export const updateClip = form(UpdateClipArgs, async (data) => {
+	const { user } = authGuard();
+
+	console.log(data);
+
+	const { clipId, title, note, songs } = data;
+
+	console.log(songs);
+
+	const [updatedClip] = await db
+		.update(clip)
+		.set({
+			title,
+			note: note ?? null,
+			songs
+		})
+		.where(and(eq(clip.id, clipId), eq(clip.createdById, user.id)))
+		.returning();
+
+	if (!updatedClip) {
+		invalid("that clip was not found");
+	}
+
+	await getClipsForVideo({
+		videoId: updatedClip.videoId
+	}).refresh();
+
+	await getMyClipsForVideo({
+		videoId: updatedClip.videoId
+	}).refresh();
 });
 
 export const deleteClip = command(

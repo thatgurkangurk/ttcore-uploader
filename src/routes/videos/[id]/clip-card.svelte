@@ -10,24 +10,12 @@
 		AlertDialogHeader,
 		AlertDialogCancel
 	} from "$lib/components/ui/alert-dialog/index.js";
-	import {
-		Accordion,
-		AccordionItem,
-		AccordionContent,
-		AccordionTrigger
-	} from "$lib/components/ui/accordion/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-	import {
-		Card,
-		CardContent,
-		CardFooter,
-		CardHeader,
-		CardTitle
-	} from "$lib/components/ui/card/index.js";
 	import Star from "@lucide/svelte/icons/star";
 	import { deleteClip, setClipSelected } from "$lib/api/clip.remote";
 	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 	import type { Clip } from "$lib/types/clip.js";
+	import ClipCard from "$lib/components/clip-card.svelte";
 
 	type Props = {
 		clip: Clip;
@@ -40,84 +28,55 @@
 	let dialogOpen = $state(false);
 </script>
 
-<Card class="h-full w-full">
-	<CardHeader>
-		<CardTitle class="text-xl">{clip.title}</CardTitle>
-	</CardHeader>
-	<CardContent>
-		<div class="aspect-video w-full overflow-hidden rounded-lg">
-			<!-- svelte-ignore a11y_media_has_caption -->
-			<video class=" h-40 w-full object-cover" src={clip.url} controls preload="none"></video>
-		</div>
-	</CardContent>
-	<CardFooter class="grid grid-cols-1 gap-1">
-		<p>
-			created by <span>{clip.creator!.name}</span>
-		</p>
-
-		{#if clip.note}
-			<Accordion type="single">
-				<AccordionItem value="item-1">
-					<AccordionTrigger>note</AccordionTrigger>
-					<AccordionContent class="whitespace-pre-wrap">
-						{clip.note}
-					</AccordionContent>
-				</AccordionItem>
-			</Accordion>
-		{/if}
-
-		<div class="flex flex-row gap-2">
-			<Button
+<ClipCard {clip}>
+	{#snippet footer()}
+		<Button
+			disabled={!submissionsOpen}
+			onclick={async () =>
+				await setClipSelected({
+					clipId: clip.id,
+					selected: !clip.selected
+				})}
+			variant="outline"
+			size="icon"
+		>
+			<Star {...clip.selected ? { fill: "#ffffff" } : {}} />
+		</Button>
+		<AlertDialog bind:open={dialogOpen}>
+			<AlertDialogTrigger
 				disabled={!submissionsOpen}
-				onclick={async () =>
-					await setClipSelected({
-						clipId: clip.id,
-						selected: !clip.selected
-					})}
-				variant="outline"
-				size="icon"
+				onclick={() => (dialogOpen = true)}
+				class={buttonVariants({ variant: "destructive" })}
 			>
-				<Star {...clip.selected ? { fill: "#ffffff" } : {}} />
-			</Button>
-			<AlertDialog bind:open={dialogOpen}>
-				<AlertDialogTrigger
-					disabled={!submissionsOpen}
-					onclick={() => (dialogOpen = true)}
-					class={buttonVariants({ variant: "destructive" })}
-				>
-					delete
-				</AlertDialogTrigger>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>
-							are you sure you want to delete "{clip.title}"?
-						</AlertDialogTitle>
-						<AlertDialogDescription>
-							this clip will permanently be gone. you probably should just unselect it
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel onclick={() => (dialogOpen = false)}>no, cancel</AlertDialogCancel>
-						<AlertDialogAction
-							disabled={deleting}
-							onclick={async () => {
-								deleting = true;
-								await deleteClip({ clipId: clip.id });
-								deleting = false;
-								dialogOpen = false;
-							}}
-						>
-							{#if deleting}
-								<LoaderCircle class="animate-spin" />
-							{/if}
-							yes, delete
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
-		</div>
-		<p>
-			clip id: <span>{clip.id}</span>
-		</p>
-	</CardFooter>
-</Card>
+				delete
+			</AlertDialogTrigger>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>
+						are you sure you want to delete "{clip.title}"?
+					</AlertDialogTitle>
+					<AlertDialogDescription>
+						this clip will permanently be gone. you probably should just unselect it
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel onclick={() => (dialogOpen = false)}>no, cancel</AlertDialogCancel>
+					<AlertDialogAction
+						disabled={deleting}
+						onclick={async () => {
+							deleting = true;
+							await deleteClip({ clipId: clip.id });
+							deleting = false;
+							dialogOpen = false;
+						}}
+					>
+						{#if deleting}
+							<LoaderCircle class="animate-spin" />
+						{/if}
+						yes, delete
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
+	{/snippet}
+</ClipCard>
