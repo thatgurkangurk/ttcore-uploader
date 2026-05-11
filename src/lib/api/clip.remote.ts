@@ -114,6 +114,12 @@ export const updateClip = form(UpdateClipArgs, async (data) => {
 
 	console.log(songs);
 
+	// if the user is an admin, only match the clipId.
+	// otherwise, match both the clipId AND ensure they created it.
+	const updateCondition = user.admin
+		? eq(clip.id, clipId)
+		: and(eq(clip.id, clipId), eq(clip.createdById, user.id));
+
 	const [updatedClip] = await db
 		.update(clip)
 		.set({
@@ -121,7 +127,7 @@ export const updateClip = form(UpdateClipArgs, async (data) => {
 			note: note ?? null,
 			songs
 		})
-		.where(and(eq(clip.id, clipId), eq(clip.createdById, user.id)))
+		.where(updateCondition)
 		.returning();
 
 	if (!updatedClip) {

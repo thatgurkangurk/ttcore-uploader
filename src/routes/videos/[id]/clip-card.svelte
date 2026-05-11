@@ -16,6 +16,7 @@
 	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 	import type { Clip } from "$lib/types/clip.js";
 	import ClipCard from "$lib/components/clip-card.svelte";
+	import EditClip from "../../user/video/[id]/components/edit-clip.svelte";
 
 	type Props = {
 		clip: Clip;
@@ -30,6 +31,7 @@
 
 <ClipCard {clip}>
 	{#snippet footer()}
+		<EditClip {clip} />
 		<Button
 			disabled={!submissionsOpen}
 			onclick={async () =>

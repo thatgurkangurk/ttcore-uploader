@@ -16,6 +16,9 @@
 	import { Textarea } from "$lib/components/ui/textarea";
 	import { ButtonGroup } from "$lib/components/ui/button-group";
 	import { watch } from "runed";
+	import { useSession } from "$lib/session.svelte";
+	import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+	import CircleAlert from "@lucide/svelte/icons/circle-alert";
 
 	let open = $state(false);
 	const isDesktop = new MediaQuery("(min-width: 768px)");
@@ -40,6 +43,8 @@
 		}
 	);
 
+	const session = useSession();
+
 	function addSong() {
 		if (songs.length >= 12) return;
 		songs.push("");
@@ -55,6 +60,32 @@
 </script>
 
 {#snippet content()}
+	{#if !(await getVideoById( { videoId: clip.videoId } )).submissionsOpen && session.current?.user.admin}
+		<Alert variant="destructive">
+			<CircleAlert />
+			<AlertTitle>scary</AlertTitle>
+			<AlertDescription>
+				you are using super spooky scary admin powers to do this (the submissions are closed)
+				<br />
+				<br />
+				scary i know
+			</AlertDescription>
+		</Alert>
+	{/if}
+
+	{#if clip.createdById !== session.current?.user.id && session.current?.user.admin}
+		<Alert variant="destructive">
+			<CircleAlert />
+			<AlertTitle>scary</AlertTitle>
+			<AlertDescription>
+				you are using super spooky scary admin powers to do this (you don't own this clip)
+				<br />
+				<br />
+				scary i know
+			</AlertDescription>
+		</Alert>
+	{/if}
+
 	<form
 		{...form.preflight(UpdateClipArgs)}
 		oninput={() => form.validate({ includeUntouched: false, preflightOnly: true })}
@@ -153,7 +184,9 @@
 {#if isDesktop.current}
 	<Dialog.Root bind:open>
 		<Dialog.Trigger
-			disabled={!(await getVideoById({ videoId: clip.videoId })).submissionsOpen}
+			disabled={session.current?.user.admin
+				? false
+				: !(await getVideoById({ videoId: clip.videoId })).submissionsOpen}
 			class={buttonVariants({ variant: "outline" })}>edit</Dialog.Trigger
 		>
 		<Dialog.Content class="sm:max-w-106.25">
@@ -169,7 +202,9 @@
 {:else}
 	<Drawer.Root bind:open>
 		<Drawer.Trigger
-			disabled={!(await getVideoById({ videoId: clip.videoId })).submissionsOpen}
+			disabled={session.current?.user.admin
+				? false
+				: !(await getVideoById({ videoId: clip.videoId })).submissionsOpen}
 			class={buttonVariants({ variant: "outline" })}>edit</Drawer.Trigger
 		>
 		<Drawer.Content>
