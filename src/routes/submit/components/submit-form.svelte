@@ -156,6 +156,7 @@
 						aria-errormessage="{createNewClip.fields.songs[idx].as('text').name}-error"
 						aria-invalid={!!createNewClip.fields.songs[idx].issues()}
 					/>
+
 					<Button
 						variant="destructive"
 						type="button"
