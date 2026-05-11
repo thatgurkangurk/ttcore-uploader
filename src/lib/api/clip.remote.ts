@@ -104,63 +104,6 @@ export const createNewClip = form(CreateNewClipArgs, async (data) => {
 	}
 });
 
-export const createNewClipCommand = command(CreateNewClipArgs, async (data) => {
-	console.table(data);
-
-	const { user } = authGuard();
-
-	const queriedVideo = await db.query.video.findFirst({
-		where: {
-			id: data.videoId
-		}
-	});
-
-	if (!queriedVideo?.submissionsOpen)
-		throw error(423, {
-			message: "sorry, but submissions are not open at the moment. check back later !"
-		});
-
-	const isOverridingUserId = user.admin && data.userOverride != null;
-
-	const createdById = isOverridingUserId ? data.userOverride : user.id;
-
-	const isOverridingProfile = user.admin && data.profileOverride != null;
-
-	if (!createdById) {
-		throw new Error("createdById is null/undefined - this should never happen");
-	}
-
-	console.log("Overriding user id:", isOverridingUserId);
-	console.log("createdById:", createdById);
-
-	await db.insert(clip).values({
-		createdById,
-		url: data.url,
-		videoId: data.videoId,
-		title: data.title,
-		overriddenProfileDataId: isOverridingProfile ? data.profileOverride : null,
-		songs: data.songs,
-		note: data.note
-	});
-
-	const embed = createClipSubmittedEmbed(data, queriedVideo, user.name, {
-		profile: isOverridingProfile,
-		user: isOverridingUserId
-	});
-
-	if (env.DISCORD_WEBHOOK_URL) {
-		await fetch(env.DISCORD_WEBHOOK_URL, {
-			method: "post",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				embeds: [embed.toJSON()]
-			})
-		});
-	}
-});
-
 export const deleteClip = command(
 	v.object({
 		clipId: v.string()
