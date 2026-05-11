@@ -203,7 +203,7 @@
 			</NativeSelect>
 
 			<Button
-				onclick={() => createNewClip.fields.profileOverride.set(undefined)}
+				onclick={() => createNewClip.fields.profileOverride.set("")}
 				variant="destructive"
 				size="icon"
 			>
@@ -222,7 +222,7 @@
 			</NativeSelect>
 
 			<Button
-				onclick={() => createNewClip.fields.userOverride.set(undefined)}
+				onclick={() => createNewClip.fields.userOverride.set("")}
 				variant="destructive"
 				size="icon"
 			>
