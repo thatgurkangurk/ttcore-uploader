@@ -5,8 +5,6 @@ import {
 	type AutoAnimationPlugin
 } from "@formkit/auto-animate";
 
-// export const autoAnimate = fromAction(autoAnimateAction);
-
 export function autoAnimate(
 	config?: Partial<AutoAnimateOptions> | AutoAnimationPlugin | undefined
 ) {
