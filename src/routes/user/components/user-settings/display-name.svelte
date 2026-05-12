@@ -3,7 +3,6 @@
 	import { Button } from "$lib/components/ui/button";
 	import Save from "@lucide/svelte/icons/save";
 	import { useSession } from "$lib/session.svelte";
-	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 	import { toast } from "svelte-sonner";
 	import { watch } from "runed";
 	import { setDisplayName } from "$lib/api/users.remote.js";
@@ -13,6 +12,7 @@
 	import InputErrors from "$lib/components/form/input-errors.svelte";
 	import { toErrors } from "$lib/utils/to-errors";
 	import ButtonGroup from "$lib/components/ui/button-group/button-group.svelte";
+	import { Spinner } from "$lib/components/ui/spinner";
 
 	const session = useSession();
 
@@ -62,7 +62,7 @@
 
 					<Button size="icon" type="submit" disabled={!!setDisplayName.pending}>
 						{#if !!setDisplayName.pending}
-							<LoaderCircle class="animate-spin" />
+							<Spinner />
 						{:else}
 							<Save />
 						{/if}

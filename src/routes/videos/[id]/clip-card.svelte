@@ -13,10 +13,10 @@
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import Star from "@lucide/svelte/icons/star";
 	import { deleteClip, setClipSelected } from "$lib/api/clip.remote";
-	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 	import type { Clip } from "$lib/types/clip.js";
 	import ClipCard from "$lib/components/clip-card.svelte";
 	import EditClip from "../../user/video/[id]/components/edit-clip.svelte";
+	import { Spinner } from "$lib/components/ui/spinner";
 
 	type Props = {
 		clip: Clip;
@@ -73,7 +73,7 @@
 						}}
 					>
 						{#if deleting}
-							<LoaderCircle class="animate-spin" />
+							<Spinner />
 						{/if}
 						yes, delete
 					</AlertDialogAction>

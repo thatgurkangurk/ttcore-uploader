@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "$lib/components/ui/card";
 	import { Button, buttonVariants } from "$lib/components/ui/button";
-	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 	import { Separator } from "$lib/components/ui/separator";
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import Trash2 from "@lucide/svelte/icons/trash-2";
@@ -14,6 +13,7 @@
 	import * as Alert from "$lib/components/ui/alert/index.js";
 	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
 	import CopyIcon from "@lucide/svelte/icons/copy";
+	import { Spinner } from "$lib/components/ui/spinner";
 
 	const apiKeyPromise = $derived(getApiKeys());
 	const apiKeys = $derived(await apiKeyPromise);
@@ -87,7 +87,7 @@
 										class={buttonVariants({ variant: "destructive" })}
 									>
 										{#if deleteForm.pending > 0}
-											<LoaderCircle class="animate-spin" />
+											<Spinner />
 										{/if}
 										Continue
 									</AlertDialog.Action>
