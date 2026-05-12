@@ -21,6 +21,8 @@ RUN apk add --no-cache \
     libstdc++\
     mise
 
+RUN mise settings libc=musl
+
 
 FROM base AS tools
 COPY mise.toml mise.lock ./
