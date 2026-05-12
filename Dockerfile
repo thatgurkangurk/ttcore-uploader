@@ -1,4 +1,4 @@
-FROM debian:13-slim AS base
+FROM alpine:3.20 AS base
 
 LABEL org.opencontainers.image.source="https://github.com/thatgurkangurk/ttcore-uploader"
 WORKDIR /app
@@ -9,12 +9,16 @@ ENV MISE_CACHE_DIR="/mise/cache"
 ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
 ENV MISE_ALL_COMPILE="false"
 ENV PATH="/mise/shims:$PATH"
-# ENV MISE_VERSION="..."
 
-RUN apt-get update  \
-    && apt-get -y --no-install-recommends install  \
-        sudo curl git ca-certificates build-essential \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache \
+    sudo \
+    curl \
+    git \
+    ca-certificates \
+    build-base \
+    bash \
+    gcompat \
+    libstdc++
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl https://mise.run | sh
@@ -22,6 +26,7 @@ RUN curl https://mise.run | sh
 
 FROM base AS tools
 COPY mise.toml mise.lock ./
+
 RUN mise trust . && mise install
 
 
@@ -44,18 +49,19 @@ COPY . .
 RUN CI="1" mise exec -- aube run build
 
 
-FROM base
-RUN groupadd -g 1001 nodejs \
- && useradd -u 1001 -g nodejs -m -s /bin/bash ttcore
+FROM alpine:3.20
+
+RUN apk add --no-cache bash gcompat libstdc++
+
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -u 1001 -S ttcore -G nodejs -s /bin/bash
 
 WORKDIR /app
-
 RUN chown ttcore:nodejs /app
 
 COPY --from=tools --chown=ttcore:nodejs /mise /mise
 
 COPY --from=prod-deps --chown=ttcore:nodejs /app/node_modules /app/node_modules
-
 COPY --from=build --chown=ttcore:nodejs /app/build /app/build
 COPY --from=build --chown=ttcore:nodejs /app/mise.toml /app/mise.lock /app/.npmrc /app/package.json /app/aube-lock.yaml ./
 
@@ -69,5 +75,6 @@ USER ttcore
 
 ENV MISE_JOBS=1
 ENV MISE_TRUSTED_CONFIG_PATHS=/app/mise.toml
+ENV PATH="/mise/shims:$PATH"
 
-CMD ["mise", "exec", "--", "node", "./build/index.js"]
+CMD ["/mise/projects/app/bin/mise", "exec", "--", "node", "./build/index.js"]
