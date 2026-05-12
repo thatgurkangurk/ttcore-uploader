@@ -29,7 +29,7 @@ FROM base AS tools
 COPY mise.toml mise.lock ./
 
 RUN mise settings node.mirror_url=https://unofficial-builds.nodejs.org/download/release/
-RUN mise settings node.flavor=musl
+RUN mise settings set node.flavor musl
 
 RUN mise trust . && mise install
 
