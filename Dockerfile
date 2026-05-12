@@ -28,10 +28,7 @@ RUN curl https://mise.run | sh
 FROM base AS tools
 COPY mise.toml mise.lock ./
 
-RUN mise settings node.mirror_url=https://unofficial-builds.nodejs.org/download/release/
-RUN mise settings set node.flavor musl
-
-RUN mise trust . && mise install
+RUN mise settings set node.flavor musl && mise settings node.mirror_url=https://unofficial-builds.nodejs.org/download/release/ && mise trust . && mise install
 
 
 FROM tools AS deps
