@@ -1,16 +1,19 @@
-import * as v from "valibot";
+import { z } from "zod";
 
-export const VideoMessageSchema = v.pipe(
-	v.string("please provide a string"),
-	v.minLength(4, "the message has to be longer than 4 characters"),
-	v.maxLength(512, "the message has to be shorter than 512 characters")
-);
+export const VideoMessageSchema = z
+	.string({
+		error: "please provide a string"
+	})
+	.min(4, { error: "the message has to be longer than 4 characters" })
+	.max(512, { error: "the message has to be shorter than 512 characters" });
 
-export const CreateNewVideoSchema = v.object({
-	title: v.pipe(
-		v.string("please provide a string"),
-		v.minLength(4, "the title has to be longer than 4 characters"),
-		v.maxLength(48, "the title has to be shorter than 48 characters")
-	),
-	message: v.optional(VideoMessageSchema)
+export const CreateNewVideoSchema = z.object({
+	title: z
+		.string({
+			error: "please provide a string"
+		})
+		.min(4, { error: "the title has to be longer than 4 characters" })
+		.max(48, { error: "the title has to be shorter than 48 characters" }),
+
+	message: VideoMessageSchema.optional()
 });

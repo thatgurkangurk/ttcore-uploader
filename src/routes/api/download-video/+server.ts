@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit";
-import * as v from "valibot";
+import * as z from "zod/v4";
 
-const urlSchema = v.pipe(v.string("please provide a url"), v.url("please provide a valid url"));
+const urlSchema = z.pipe(z.string("please provide a url"), z.url("please provide a valid url"));
 
 export async function GET({ url, locals }) {
 	if (!locals.user)
@@ -11,14 +11,14 @@ export async function GET({ url, locals }) {
 
 	const rawVideoUrl = url.searchParams.get("videoUrl");
 
-	const validationResult = v.safeParse(urlSchema, rawVideoUrl);
+	const validationResult = z.safeParse(urlSchema, rawVideoUrl);
 
 	if (!validationResult.success) {
-		const errorMessage = validationResult.issues[0].message;
+		const errorMessage = validationResult.error.issues[0].message;
 		throw error(400, errorMessage);
 	}
 
-	const videoUrl = validationResult.output;
+	const videoUrl = validationResult.data;
 
 	try {
 		const videoRes = await fetch(videoUrl);

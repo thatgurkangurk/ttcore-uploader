@@ -1,16 +1,15 @@
-import * as v from "valibot";
+import { z } from "zod";
 
-export const MedalDownloaderSchema = v.object({
-	url: v.pipe(
-		v.string("please provide a url"),
-		v.url("please provide a valid url"),
-		v.check((value) => {
+export const MedalDownloaderSchema = z.object({
+	url: z.url({ error: "please provide a valid url" }).refine(
+		(value) => {
 			try {
 				const parsed = new URL(value);
 				return parsed.hostname === "medal.tv";
 			} catch {
 				return false;
 			}
-		}, "please provide a medal link")
+		},
+		{ error: "please provide a medal link" }
 	)
 });

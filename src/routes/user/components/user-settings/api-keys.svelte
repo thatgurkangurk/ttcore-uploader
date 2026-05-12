@@ -1,59 +1,59 @@
 <script lang="ts">
 	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "$lib/components/ui/card";
 	import { Button, buttonVariants } from "$lib/components/ui/button";
-	import { createForm, Field, Form, reset, setErrors, type SubmitHandler } from "@formisch/svelte";
-	import { useSession } from "$lib/session.svelte";
-	import TextInput from "$lib/components/form/text-input.svelte";
 	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
-	import { toast } from "svelte-sonner";
 	import { Separator } from "$lib/components/ui/separator";
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import Trash2 from "@lucide/svelte/icons/trash-2";
-	import * as v from "valibot";
-	import { getApiKeys } from "../../api-keys.remote";
-
-	const CreateNewApiKeySchema = v.object({
-		name: v.pipe(
-			v.string("please provide a name"),
-			v.minLength(4, "the name has to be longer than 4 characters"),
-			v.maxLength(24, "the name has to be shorter than 24 characters")
-		)
-	});
-
-	const form = createForm({
-		schema: CreateNewApiKeySchema
-	});
-
-	let isDeleting = $state(false);
+	import { getApiKeys, createApiKey, deleteApiKey } from "$lib/api/api-key.remote.js";
+	import { CreateNewApiKeySchema } from "$lib/schemas/api-key";
+	import { Input } from "$lib/components/ui/input";
+	import { Label } from "$lib/components/ui/label";
+	import InputErrors from "$lib/components/form/input-errors.svelte";
+	import { toErrors } from "$lib/utils/to-errors";
+	import * as Alert from "$lib/components/ui/alert/index.js";
+	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
+	import CopyIcon from "@lucide/svelte/icons/copy";
 
 	const apiKeyPromise = $derived(getApiKeys());
 	const apiKeys = $derived(await apiKeyPromise);
-
-	const session = useSession();
-
-	const submitForm: SubmitHandler<typeof CreateNewApiKeySchema> = async (output) => {
-		const { data, error } = await session.authClient.apiKey.create({
-			name: output.name
-		});
-
-		if (error) {
-			setErrors(form, {
-				path: ["name"],
-				errors: ["something went wrong"]
-			});
-
-			console.error(error.message);
-		}
-
-		navigator.clipboard.writeText(data?.key || "");
-
-		toast.success("the API key is copied to your clipboard");
-
-		await getApiKeys().refresh();
-
-		reset(form);
-	};
 </script>
+
+{#if createApiKey.result?.success}
+	<Alert.Root class="border-emerald-500/50 bg-emerald-50/50 dark:bg-emerald-950/20">
+		<CheckCircle2Icon class="h-5 w-5 shrink-0 text-emerald-600" />
+
+		<div class="flex w-full min-w-0 flex-col gap-2">
+			<Alert.Title class="text-emerald-800 dark:text-emerald-400">
+				successfully created a new api key
+			</Alert.Title>
+
+			<Alert.Description class="space-y-3">
+				<p class="text-sm opacity-90">
+					please copy your key now because
+					<span class="font-semibold text-destructive">you won't be able to see it again.</span>
+				</p>
+
+				<div class="mt-2 flex items-center gap-2">
+					<code
+						class="relative min-w-0 flex-1 rounded border bg-muted px-2 py-[0.4rem] font-mono text-sm font-semibold break-all select-all"
+					>
+						{createApiKey.result.key}
+					</code>
+
+					<Button
+						variant="outline"
+						size="icon"
+						class="shrink-0"
+						onclick={() => navigator.clipboard.writeText(createApiKey.result?.key || "")}
+					>
+						<CopyIcon class="h-4 w-4" />
+					</Button>
+				</div>
+			</Alert.Description>
+		</div>
+	</Alert.Root>
+{/if}
 
 <Card class="w-full max-w-xl">
 	<CardHeader>
@@ -62,6 +62,7 @@
 	<CardContent class="flex gap-2">
 		<div class="grid grid-cols-1 gap-4">
 			{#each apiKeys.apiKeys as apiKey (apiKey.id)}
+				{@const deleteForm = deleteApiKey.for(apiKey.id)}
 				<div class="flex flex-row items-center gap-2">
 					<p>{apiKey.name} - {apiKey.start}...</p>
 					<AlertDialog.Root>
@@ -77,52 +78,55 @@
 							</AlertDialog.Header>
 							<AlertDialog.Footer>
 								<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-								<AlertDialog.Action
-									disabled={isDeleting}
-									onclick={async () => {
-										isDeleting = true;
-										await session.authClient.apiKey.delete({
-											keyId: apiKey.id
-										});
+								<form {...deleteForm}>
+									<input {...deleteForm.fields.keyId.as("hidden", apiKey.id)} />
 
-										await getApiKeys().refresh();
-										isDeleting = false;
-									}}
-									class={buttonVariants({ variant: "destructive" })}
-								>
-									{#if isDeleting}
-										<LoaderCircle class="animate-spin" />
-									{/if}
-									Continue
-								</AlertDialog.Action>
+									<AlertDialog.Action
+										disabled={deleteForm.pending > 0}
+										type="submit"
+										class={buttonVariants({ variant: "destructive" })}
+									>
+										{#if deleteForm.pending > 0}
+											<LoaderCircle class="animate-spin" />
+										{/if}
+										Continue
+									</AlertDialog.Action>
+								</form>
 							</AlertDialog.Footer>
 						</AlertDialog.Content>
 					</AlertDialog.Root>
 				</div>
 			{/each}
 			<Separator />
-			<Form of={form} onsubmit={submitForm}>
-				<Field of={form} path={["name"]}>
-					{#snippet children(field)}
-						<TextInput
-							{...field.props}
-							input={field.input}
-							errors={field.errors}
-							type="text"
-							label="create a new api key"
-							placeholder="my beautiful api key"
-							required
-						/>
-					{/snippet}
-				</Field>
+
+			<form
+				{...createApiKey.preflight(CreateNewApiKeySchema)}
+				oninput={() => createApiKey.validate({ includeUntouched: false, preflightOnly: true })}
+				enctype="multipart/form-data"
+			>
+				<div>
+					<Label class={[!!createApiKey.fields.name.issues() && "text-destructive", "pb-2"]}
+						>name</Label
+					>
+					<Input
+						{...createApiKey.fields.name.as("text")}
+						aria-errormessage="{createApiKey.fields.name.as('text').name}-error"
+						aria-invalid={!!createApiKey.fields.name.issues()}
+						placeholder="my api key"
+					/>
+
+					<InputErrors
+						name={createApiKey.fields.name.as("text").name}
+						errors={toErrors(
+							createApiKey.fields.name.issues()?.map((value) => value.message) ?? []
+						)}
+					/>
+				</div>
+
 				<br />
-				<Button type="submit" disabled={!form.isDirty || !form.isValid || form.isSubmitting}>
-					{#if form.isSubmitting}
-						<LoaderCircle class="animate-spin" />
-					{/if}
-					create
-				</Button>
-			</Form>
+
+				<Button type="submit" disabled={!!createApiKey.pending}>create</Button>
+			</form>
 		</div>
 	</CardContent>
 	<CardFooter>

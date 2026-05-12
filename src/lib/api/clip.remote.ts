@@ -5,12 +5,11 @@ import { clip } from "$lib/server/db/schema/clip";
 import { EmbedBuilder } from "@discordjs/builders";
 import { error, invalid } from "@sveltejs/kit";
 import { and, eq } from "drizzle-orm";
-import * as v from "valibot";
-
 import { ClipTitleSchema, CreateNewClipArgs, UpdateClipArgs } from "$lib/schemas/clip.js";
 import { SongsSchema } from "$lib/schemas/song.js";
 import { authGuard, adminOnlyGuard } from "./utils";
 import { getClipsForVideo, getMyClipsForVideo } from "./video.remote";
+import * as z from "zod/v4";
 
 type Video = {
 	title: string;
@@ -20,7 +19,7 @@ type Video = {
 };
 
 function createClipSubmittedEmbed(
-	clip: v.InferOutput<typeof CreateNewClipArgs>,
+	clip: z.infer<typeof CreateNewClipArgs>,
 	video: Video,
 	authorName: string,
 	overridden: { user: boolean; profile: boolean }
@@ -144,8 +143,8 @@ export const updateClip = form(UpdateClipArgs, async (data) => {
 });
 
 export const deleteClip = command(
-	v.object({
-		clipId: v.string()
+	z.object({
+		clipId: z.string()
 	}),
 	async (data) => {
 		adminOnlyGuard();
@@ -170,8 +169,8 @@ export const deleteClip = command(
 );
 
 export const setNewClipSongs = command(
-	v.object({
-		clipId: v.string(),
+	z.object({
+		clipId: z.string(),
 		songs: SongsSchema
 	}),
 	async (data) => {
@@ -206,8 +205,8 @@ export const setNewClipSongs = command(
 );
 
 export const setNewClipTitle = command(
-	v.object({
-		clipId: v.string(),
+	z.object({
+		clipId: z.string(),
 		title: ClipTitleSchema
 	}),
 	async (data) => {
@@ -242,9 +241,9 @@ export const setNewClipTitle = command(
 );
 
 export const setClipSelected = command(
-	v.object({
-		clipId: v.string(),
-		selected: v.boolean()
+	z.object({
+		clipId: z.string(),
+		selected: z.boolean()
 	}),
 	async (data) => {
 		adminOnlyGuard();

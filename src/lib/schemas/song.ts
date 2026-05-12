@@ -1,13 +1,13 @@
-import * as v from "valibot";
+import { z } from "zod";
 
-export const SongsSchema = v.pipe(
-	v.array(
-		v.pipe(
-			v.string(),
-			v.nonEmpty("please provide a value"),
-			v.minLength(8, "please provide a value longer than 8 characters"),
-			v.maxLength(64, "please provide a value shorter than 64 characters")
-		)
-	),
-	v.maxLength(12, "why do you have more than 12 songs in one video")
-);
+export const SongsSchema = z
+	.array(
+		z
+			.string({
+				error: "please provide a string"
+			})
+			.min(1, { error: "please provide a value" })
+			.min(8, { error: "please provide a value longer than 8 characters" })
+			.max(64, { error: "please provide a value shorter than 64 characters" })
+	)
+	.max(12, { error: "why do you have more than 12 songs in one video" });

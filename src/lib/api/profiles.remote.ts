@@ -1,7 +1,7 @@
 import { form, query } from "$app/server";
 import { db } from "$lib/server/db";
 import { profile } from "$lib/server/db/schema/profile";
-import * as v from "valibot";
+import * as z from "zod/v4";
 
 import { adminOnlyGuard } from "./utils";
 
@@ -12,9 +12,9 @@ export const getProfiles = query(async () => {
 });
 
 export const createProfile = form(
-	v.object({
-		line1: v.string(),
-		line2: v.string()
+	z.object({
+		line1: z.string(),
+		line2: z.string()
 	}),
 	async (data) => {
 		adminOnlyGuard();

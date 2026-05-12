@@ -1,7 +1,10 @@
-import { query } from "$app/server";
+import { form, getRequestEvent, query } from "$app/server";
+import { SetNewDisplayNameSchema } from "$lib/schemas/user";
+import { auth } from "$lib/server/auth";
 import { db } from "$lib/server/db";
+import { error } from "@sveltejs/kit";
 
-import { adminOnlyGuard } from "./utils";
+import { adminOnlyGuard, authGuard } from "./utils";
 
 export const getUsers = query(async () => {
 	adminOnlyGuard();
@@ -14,4 +17,17 @@ export const getUsers = query(async () => {
 		}
 	});
 	return allUsers;
+});
+
+export const setDisplayName = form(SetNewDisplayNameSchema, async (data) => {
+	authGuard();
+
+	const res = await auth.api.updateUser({
+		body: {
+			name: data.displayName
+		},
+		headers: getRequestEvent().request.headers
+	});
+
+	if (!res.status) throw error(403);
 });

@@ -14,6 +14,7 @@ export class SessionState {
 		user: User;
 	} | null = $state(null);
 	public readonly authClient;
+	public readonly refresh: () => Promise<void>;
 
 	constructor(
 		sessionData: {
@@ -25,7 +26,10 @@ export class SessionState {
 		this.authClient = createAuthClient({
 			plugins: [apiKeyClient(), inferAdditionalFields<typeof auth>()]
 		});
+
 		const rawSession = fromStore(this.authClient.useSession());
+
+		this.refresh = rawSession.current.refetch;
 
 		$effect(() => {
 			if (rawSession.current.isPending) return;

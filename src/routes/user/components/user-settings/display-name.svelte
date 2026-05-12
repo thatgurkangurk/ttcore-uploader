@@ -3,60 +3,27 @@
 	import { Button } from "$lib/components/ui/button";
 	import Save from "@lucide/svelte/icons/save";
 	import { useSession } from "$lib/session.svelte";
-	import { createForm, Field, Form, reset, setErrors, type SubmitHandler } from "@formisch/svelte";
-	import * as v from "valibot";
 	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
-	import TextInput from "$lib/components/form/text-input.svelte";
 	import { toast } from "svelte-sonner";
 	import { watch } from "runed";
+	import { setDisplayName } from "$lib/api/users.remote.js";
+	import { SetNewDisplayNameSchema } from "$lib/schemas/user";
+	import { Label } from "$lib/components/ui/label";
+	import { Input } from "$lib/components/ui/input";
+	import InputErrors from "$lib/components/form/input-errors.svelte";
+	import { toErrors } from "$lib/utils/to-errors";
+	import ButtonGroup from "$lib/components/ui/button-group/button-group.svelte";
 
 	const session = useSession();
 
-	const formSchema = v.object({
-		displayName: v.pipe(
-			v.string("please provide a display name"),
-			v.nonEmpty("please provide a display name"),
-			v.minLength(4, "your display name has to be longer than 4 characters"),
-			v.maxLength(48, "your display name has to be shorter than 48 characters")
-		)
-	});
-
-	const form = createForm({
-		schema: formSchema,
-		initialInput: {
-			displayName: session.current?.user.name
-		}
-	});
+	let form = $state<HTMLFormElement>();
 
 	watch(
 		() => session.current?.user.name,
-		(name) => {
-			reset(form, {
-				initialInput: {
-					displayName: name
-				}
-			});
+		() => {
+			form?.reset();
 		}
 	);
-
-	const submitForm: SubmitHandler<typeof formSchema> = async (values) => {
-		const res = await session.authClient.updateUser({
-			name: values.displayName
-		});
-
-		if (res.error) {
-			setErrors(form, {
-				path: ["displayName"],
-				errors: [res.error.message || "unknown error"]
-			});
-
-			return;
-		}
-
-		toast.success("profile updated successfully", {
-			position: "top-left"
-		});
-	};
 </script>
 
 <Card class="w-full max-w-xl">
@@ -64,30 +31,52 @@
 		<CardTitle>display name</CardTitle>
 	</CardHeader>
 	<CardContent class="flex gap-2">
-		<Form of={form} onsubmit={submitForm}>
-			<Field of={form} path={["displayName"]}>
-				{#snippet children(field)}
-					<TextInput
-						{...field.props}
-						input={field.input}
-						errors={field.errors}
-						type="text"
-						placeholder="display name"
-						required
-					>
-						{#snippet button()}
-							<Button size="icon" type="submit" disabled={form.isSubmitting}>
-								{#if form.isSubmitting}
-									<LoaderCircle class="animate-spin" />
-								{:else}
-									<Save />
-								{/if}
-							</Button>
-						{/snippet}
-					</TextInput>
-				{/snippet}
-			</Field>
-		</Form>
+		<form
+			bind:this={form}
+			{...setDisplayName.preflight(SetNewDisplayNameSchema).enhance(async ({ form, submit }) => {
+				try {
+					if (await submit()) {
+						form.reset();
+
+						void session.refresh();
+					}
+				} catch (error) {
+					console.error(error);
+					toast.error("something went wrong");
+				}
+			})}
+			oninput={() => setDisplayName.validate({ includeUntouched: false, preflightOnly: true })}
+			enctype="multipart/form-data"
+		>
+			<div>
+				<Label class={[!!setDisplayName.fields.displayName.issues() && "text-destructive", "pb-2"]}
+					>display name</Label
+				>
+				<ButtonGroup>
+					<Input
+						{...setDisplayName.fields.displayName.as("text", session.current?.user.name || "")}
+						aria-errormessage="{setDisplayName.fields.displayName.as('text').name}-error"
+						aria-invalid={!!setDisplayName.fields.displayName.issues()}
+						placeholder="me"
+					/>
+
+					<Button size="icon" type="submit" disabled={!!setDisplayName.pending}>
+						{#if !!setDisplayName.pending}
+							<LoaderCircle class="animate-spin" />
+						{:else}
+							<Save />
+						{/if}
+					</Button>
+				</ButtonGroup>
+
+				<InputErrors
+					name={setDisplayName.fields.displayName.as("text").name}
+					errors={toErrors(
+						setDisplayName.fields.displayName.issues()?.map((value) => value.message) ?? []
+					)}
+				/>
+			</div>
+		</form>
 	</CardContent>
 	<CardFooter>
 		<p class="text-sm">

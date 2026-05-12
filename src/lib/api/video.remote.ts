@@ -3,7 +3,7 @@ import { db } from "$lib/server/db";
 import { video } from "$lib/server/db/schema/video";
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
-import * as v from "valibot";
+import * as z from "zod/v4";
 
 import { CreateNewVideoSchema, VideoMessageSchema } from "../../routes/videos/schemas";
 import { adminOnlyGuard, authGuard } from "./utils";
@@ -21,8 +21,8 @@ export const createVideo = form(CreateNewVideoSchema, async (data) => {
 });
 
 export const setVideoMessage = form(
-	v.object({
-		videoId: v.string(),
+	z.object({
+		videoId: z.string(),
 		newMessage: VideoMessageSchema
 	}),
 	async (data) => {
@@ -69,7 +69,7 @@ export const getVideosWithMySubmissions = query(async () => {
 /**
  * very good name i know
  */
-export const getDateOfLastSubmissionForVideoByCurrentUser = query(v.string(), async (data) => {
+export const getDateOfLastSubmissionForVideoByCurrentUser = query(z.string(), async (data) => {
 	const { user } = authGuard();
 
 	const lastSubmittedClip = await db.query.clip.findFirst({
@@ -86,8 +86,8 @@ export const getDateOfLastSubmissionForVideoByCurrentUser = query(v.string(), as
 });
 
 export const getVideoById = query(
-	v.object({
-		videoId: v.string()
+	z.object({
+		videoId: z.string()
 	}),
 	async (data) => {
 		authGuard();
@@ -104,8 +104,8 @@ export const getVideoById = query(
 );
 
 export const getMyClipsForVideo = query(
-	v.object({
-		videoId: v.string()
+	z.object({
+		videoId: z.string()
 	}),
 	async (params) => {
 		const { user } = authGuard();
@@ -128,8 +128,8 @@ export const getMyClipsForVideo = query(
 );
 
 export const getClipsForVideo = query(
-	v.object({
-		videoId: v.string()
+	z.object({
+		videoId: z.string()
 	}),
 	async (params) => {
 		adminOnlyGuard();
@@ -151,8 +151,8 @@ export const getClipsForVideo = query(
 );
 
 export const getSubmissionsOpen = query(
-	v.object({
-		videoId: v.string()
+	z.object({
+		videoId: z.string()
 	}),
 	async (data) => {
 		adminOnlyGuard();
@@ -169,9 +169,9 @@ export const getSubmissionsOpen = query(
 );
 
 export const setSubmissionsOpen = command(
-	v.object({
-		videoId: v.string(),
-		submissionsOpen: v.boolean()
+	z.object({
+		videoId: z.string(),
+		submissionsOpen: z.boolean()
 	}),
 	async (data) => {
 		adminOnlyGuard();
