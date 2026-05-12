@@ -14,12 +14,31 @@
 	import { toErrors } from "$lib/utils/to-errors";
 	import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 	import { autoAnimate } from "$lib/attachments/auto-animate.svelte";
+	import { configureForm } from "$lib/remote-form.svelte";
+	import { toast } from "svelte-sonner";
 
 	type Props = {
 		videoId: string;
 	};
 
 	let { videoId }: Props = $props();
+
+	let formEl: HTMLFormElement | undefined = $state.raw();
+
+	const configured = configureForm(() => ({
+		form: createNewClip,
+		formEl,
+		schema: CreateNewClipArgs,
+		initialErrors: true,
+		navBlockMessage: "you have unsaved changes. are you sure?",
+		onresult: ({ success, error }) => {
+			if (success) {
+				toast.success("successfully submitted");
+			} else if (error) {
+				toast.error(error);
+			}
+		}
+	}));
 
 	const session = useSession();
 
@@ -64,6 +83,8 @@
 	function removeAllSongs() {
 		songs.length = 0;
 	}
+
+	const { form, attributes, submitting } = $derived(configured());
 </script>
 
 <br />
@@ -81,60 +102,54 @@
 
 <br />
 
-<form
-	{...createNewClip.preflight(CreateNewClipArgs)}
-	oninput={() => createNewClip.validate({ includeUntouched: false, preflightOnly: true })}
-	enctype="multipart/form-data"
->
-	<input {...createNewClip.fields.videoId.as("hidden", videoId)} />
+<form bind:this={formEl} {...attributes} enctype="multipart/form-data">
+	<input {...form.fields.videoId.as("hidden", videoId)} />
 
 	<div>
-		<Label class={[!!createNewClip.fields.title.issues() && "text-destructive", "pb-2"]}
-			>title</Label
-		>
+		<Label class={[!!form.fields.title.issues() && "text-destructive", "pb-2"]}>title</Label>
 		<Input
-			{...createNewClip.fields.title.as("text")}
-			aria-errormessage="{createNewClip.fields.title.as('text').name}-error"
-			aria-invalid={!!createNewClip.fields.title.issues()}
+			{...form.fields.title.as("text")}
+			aria-errormessage="{form.fields.title.as('text').name}-error"
+			aria-invalid={!!form.fields.title.issues()}
 			placeholder="my amazing clip"
 		/>
 
 		<InputErrors
-			name={createNewClip.fields.title.as("text").name}
-			errors={toErrors(createNewClip.fields.title.issues()?.map((value) => value.message) ?? [])}
+			name={form.fields.title.as("text").name}
+			errors={toErrors(form.fields.title.issues()?.map((value) => value.message) ?? [])}
 		/>
 	</div>
 	<br />
 	<div>
-		<Label class={[!!createNewClip.fields.url.issues() && "text-destructive", "pb-2"]}
+		<Label class={[!!form.fields.url.issues() && "text-destructive", "pb-2"]}
 			>direct link to a video</Label
 		>
 		<Input
-			{...createNewClip.fields.url.as("url")}
-			aria-errormessage="{createNewClip.fields.url.as('url').name}-error"
-			aria-invalid={!!createNewClip.fields.url.issues()}
+			{...form.fields.url.as("url")}
+			aria-errormessage="{form.fields.url.as('url').name}-error"
+			aria-invalid={!!form.fields.url.issues()}
 			placeholder="https://my.clip.host/clip.mp4"
 		/>
 
 		<InputErrors
-			name={createNewClip.fields.url.as("url").name}
-			errors={toErrors(createNewClip.fields.url.issues()?.map((value) => value.message) ?? [])}
+			name={form.fields.url.as("url").name}
+			errors={toErrors(form.fields.url.issues()?.map((value) => value.message) ?? [])}
 		/>
 	</div>
 	<br />
 	<div>
-		<Label class={[!!createNewClip.fields.note.issues() && "text-destructive", "pb-2"]}
+		<Label class={[!!form.fields.note.issues() && "text-destructive", "pb-2"]}
 			>note (optional)</Label
 		>
 		<Textarea
-			{...createNewClip.fields.note.as("text")}
-			aria-errormessage="{createNewClip.fields.note.as('text').name}-error"
-			aria-invalid={!!createNewClip.fields.note.issues()}
+			{...form.fields.note.as("text")}
+			aria-errormessage="{form.fields.note.as('text').name}-error"
+			aria-invalid={!!form.fields.note.issues()}
 		/>
 
 		<InputErrors
-			name={createNewClip.fields.note.as("text").name}
-			errors={toErrors(createNewClip.fields.note.issues()?.map((value) => value.message) ?? [])}
+			name={form.fields.note.as("text").name}
+			errors={toErrors(form.fields.note.issues()?.map((value) => value.message) ?? [])}
 		/>
 	</div>
 
@@ -146,21 +161,21 @@
 	<div {@attach autoAnimate({ duration: 150 })}>
 		{#each songs, idx (idx)}
 			<div class="py-2">
-				<Label class={[!!createNewClip.fields.songs[idx].issues() && "text-destructive", "pb-2"]}>
+				<Label class={[!!form.fields.songs[idx].issues() && "text-destructive", "pb-2"]}>
 					song {idx + 1}
 				</Label>
 
 				<ButtonGroup>
 					<Input
-						{...createNewClip.fields.songs[idx].as("text")}
-						aria-errormessage="{createNewClip.fields.songs[idx].as('text').name}-error"
-						aria-invalid={!!createNewClip.fields.songs[idx].issues()}
+						{...form.fields.songs[idx].as("text")}
+						aria-errormessage="{form.fields.songs[idx].as('text').name}-error"
+						aria-invalid={!!form.fields.songs[idx].issues()}
 					/>
 
 					<Button
 						variant="destructive"
 						type="button"
-						disabled={!!createNewClip.pending}
+						disabled={!!form.pending}
 						onclick={() => {
 							removeSong(idx);
 						}}
@@ -170,10 +185,8 @@
 				</ButtonGroup>
 
 				<InputErrors
-					name={createNewClip.fields.songs[idx].as("text").name}
-					errors={toErrors(
-						createNewClip.fields.songs[idx].issues()?.map((value) => value.message) ?? []
-					)}
+					name={form.fields.songs[idx].as("text").name}
+					errors={toErrors(form.fields.songs[idx].issues()?.map((value) => value.message) ?? [])}
 				/>
 			</div>
 		{/each}
@@ -198,7 +211,7 @@
 
 		<Label class="pb-2">select a profile override</Label>
 		<div class="flex items-center gap-2">
-			<NativeSelect {...createNewClip.fields.profileOverride.as("select", "")}>
+			<NativeSelect {...form.fields.profileOverride.as("select", "")}>
 				<NativeSelectOption value="">select a profile override</NativeSelectOption>
 
 				{#each profileValues as profile (profile.value)}
@@ -206,26 +219,20 @@
 				{/each}
 			</NativeSelect>
 
-			<Button
-				onclick={() => createNewClip.fields.profileOverride.set("")}
-				variant="destructive"
-				size="icon"
-			>
+			<Button onclick={() => form.fields.profileOverride.set("")} variant="destructive" size="icon">
 				<Trash2 />
 			</Button>
 		</div>
 		<InputErrors
-			name={createNewClip.fields.profileOverride.as("select").name}
-			errors={toErrors(
-				createNewClip.fields.profileOverride.issues()?.map((value) => value.message) ?? []
-			)}
+			name={form.fields.profileOverride.as("select").name}
+			errors={toErrors(form.fields.profileOverride.issues()?.map((value) => value.message) ?? [])}
 		/>
 
 		<br />
 
 		<Label class="pb-2">select a user override</Label>
 		<div class="flex items-center gap-2">
-			<NativeSelect {...createNewClip.fields.userOverride.as("select", "")}>
+			<NativeSelect {...form.fields.userOverride.as("select", "")}>
 				<NativeSelectOption value="">select a user override</NativeSelectOption>
 
 				{#each userValues as user (user.value)}
@@ -234,23 +241,21 @@
 			</NativeSelect>
 
 			<Button
-				onclick={() => createNewClip.fields.userOverride.set("")}
+				onclick={() => form.fields.userOverride.set("")}
 				variant="destructive"
 				size="icon"
-				disabled={createNewClip.fields.userOverride.value() === ""}
+				disabled={form.fields.userOverride.value() === ""}
 			>
 				<Trash2 />
 			</Button>
 		</div>
 		<InputErrors
-			name={createNewClip.fields.userOverride.as("select").name}
-			errors={toErrors(
-				createNewClip.fields.userOverride.issues()?.map((value) => value.message) ?? []
-			)}
+			name={form.fields.userOverride.as("select").name}
+			errors={toErrors(form.fields.userOverride.issues()?.map((value) => value.message) ?? [])}
 		/>
 	{/if}
 
 	<br />
 
-	<Button type="submit" disabled={!!createNewClip.pending}>submit</Button>
+	<Button type="submit" disabled={submitting}>submit</Button>
 </form>
