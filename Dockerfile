@@ -18,10 +18,8 @@ RUN apk add --no-cache \
     build-base \
     bash \
     gcompat \
-    libstdc++
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl https://mise.run | sh
+    libstdc++\
+    mise
 
 
 FROM base AS tools
