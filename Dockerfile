@@ -8,6 +8,7 @@ ENV MISE_CONFIG_DIR="/mise"
 ENV MISE_CACHE_DIR="/mise/cache"
 ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
 ENV MISE_ALL_COMPILE="false"
+ENV MISE_LIBC="musl"
 ENV PATH="/mise/shims:$PATH"
 
 RUN apk add --no-cache \
@@ -20,8 +21,6 @@ RUN apk add --no-cache \
     gcompat \
     libstdc++\
     mise
-
-RUN mise settings set libc musl
 
 
 FROM base AS tools
