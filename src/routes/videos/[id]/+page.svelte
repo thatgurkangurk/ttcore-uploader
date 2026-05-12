@@ -11,6 +11,10 @@
 	import { Label } from "$lib/components/ui/label";
 	import { Textarea } from "$lib/components/ui/textarea";
 	import InputErrors from "$lib/components/form/input-errors.svelte";
+	import { configureForm } from "$lib/remote-form.svelte";
+	import { SetVideoMessageSchema } from "$lib/schemas/video";
+	import { toast } from "svelte-sonner";
+	import { toErrors } from "$lib/utils/to-errors";
 
 	let { params }: PageProps = $props();
 
@@ -36,12 +40,24 @@
 		getClipsForVideo({ videoId: params.id }).refresh();
 	}, 500);
 
-	function toErrors(arr: string[]): [string, ...string[]] | null {
-		if (arr.length === 0) return null;
+	const configured = configureForm(() => ({
+		form: setVideoMessage,
+		formEl,
+		schema: SetVideoMessageSchema,
+		initialErrors: true,
+		navBlockMessage: "you have unsaved changes. are you sure?",
+		onresult: ({ success, error }) => {
+			if (success) {
+				toast.success("successfully submitted");
+			} else if (error) {
+				toast.error(error);
+			}
+		}
+	}));
 
-		const [first, ...rest] = arr;
-		return [first, ...rest];
-	}
+	const { form, attributes, submitting } = $derived(configured());
+
+	let formEl: HTMLFormElement | undefined = $state.raw();
 
 	keys.onKeys(["shift", "r"], throttledRefresh);
 </script>
@@ -56,31 +72,27 @@
 			<CardTitle>set video message</CardTitle>
 		</CardHeader>
 		<CardContent>
-			{@const setVideoMessageForm = setVideoMessage.for(video.id)}
-			<form {...setVideoMessageForm}>
-				<input {...setVideoMessageForm.fields.videoId.as("hidden", video.id)} />
+			<form {...attributes}>
+				<input {...form.fields.videoId.as("hidden", video.id)} />
 				<div>
-					<Label
-						class={[!!setVideoMessageForm.fields.newMessage.issues() && "text-destructive", "pb-2"]}
+					<Label class={[!!form.fields.newMessage.issues() && "text-destructive", "pb-2"]}
 						>message</Label
 					>
 					<Textarea
-						{...setVideoMessageForm.fields.newMessage.as("text")}
-						aria-errormessage="{setVideoMessageForm.fields.newMessage.as('text').name}-error"
-						aria-invalid={!!setVideoMessageForm.fields.newMessage.issues()}
+						{...form.fields.newMessage.as("text")}
+						aria-errormessage="{form.fields.newMessage.as('text').name}-error"
+						aria-invalid={!!form.fields.newMessage.issues()}
 						placeholder={video.message}
 					/>
 
 					<InputErrors
-						name={setVideoMessageForm.fields.newMessage.as("text").name}
-						errors={toErrors(
-							setVideoMessageForm.fields.newMessage.issues()?.map((value) => value.message) ?? []
-						)}
+						name={form.fields.newMessage.as("text").name}
+						errors={toErrors(form.fields.newMessage.issues()?.map((value) => value.message) ?? [])}
 					/>
 				</div>
 
 				<br />
-				<Button type="submit">update</Button>
+				<Button type="submit" disabled={submitting}>update</Button>
 			</form>
 		</CardContent>
 	</Card>
