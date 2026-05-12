@@ -21,7 +21,7 @@ RUN apk add --no-cache \
     libstdc++\
     mise
 
-RUN mise settings libc=musl
+RUN mise settings set libc=musl
 
 
 FROM base AS tools
