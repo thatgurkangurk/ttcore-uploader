@@ -1,34 +1,30 @@
-FROM alpine:3.20 AS base
+FROM debian:13-slim AS builder-base
 
-LABEL org.opencontainers.image.source="https://github.com/thatgurkangurk/ttcore-uploader"
 WORKDIR /app
 
-ENV MISE_LIBC="musl"
-ENV MISE_BASE_DIR="/opt/mise"
-ENV MISE_DATA_DIR="/opt/mise/data"
-ENV MISE_CONFIG_DIR="/opt/mise/config"
-ENV MISE_CACHE_DIR="/opt/mise/cache"
-ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
-ENV PATH="/opt/mise/data/shims:$PATH"
+ENV MISE_DATA_DIR="/mise"
+ENV MISE_CONFIG_DIR="/mise"
+ENV MISE_CACHE_DIR="/mise/cache"
+ENV MISE_ALL_COMPILE="false"
+ENV PATH="/mise/shims:$PATH"
 
-RUN apk add --no-cache \
-    sudo \
-    curl \
-    git \
-    ca-certificates \
-    build-base \
-    bash \
-    gcompat \
-    libstdc++
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl https://mise.run | sh
+RUN apt-get update \
+    && apt-get -y --no-install-recommends install curl ca-certificates gnupg \
+    && install -dm 755 /etc/apt/keyrings \
+    && curl -fSs https://mise.en.dev/gpg-key.pub | tee /etc/apt/keyrings/mise-archive-keyring.asc 1> /dev/null \
+    && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.asc] https://mise.en.dev/deb stable main" | tee /etc/apt/sources.list.d/mise.list \
+    && apt-get update \
+    && apt-get -y --no-install-recommends install mise \
+    && rm -rf /var/lib/apt/lists/*
 
 
-FROM base AS tools
+FROM builder-base AS tools
 COPY mise.toml mise.lock ./
 
-RUN mise settings set node.flavor musl && mise settings node.mirror_url=https://unofficial-builds.nodejs.org/download/release/ && mise trust . && mise install
+RUN mise trust . && \
+    mise install && \
+    mise cache clean && \
+    rm -rf /mise/cache /mise/downloads
 
 
 FROM tools AS deps
@@ -50,35 +46,34 @@ COPY . .
 RUN CI="1" mise exec -- aube run build
 
 
-FROM alpine:3.20 AS runner
+FROM debian:13-slim AS runner
 
-RUN apk add --no-cache bash gcompat libstdc++
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -u 1001 -S ttcore -G nodejs -s /bin/bash
+RUN groupadd -g 1001 nodejs \
+ && useradd -u 1001 -g nodejs -m -s /bin/bash ttcore
 
 WORKDIR /app
-RUN chown ttcore:nodejs /app
 
-COPY --from=tools --chown=ttcore:nodejs /opt/mise /opt/mise
-COPY --from=tools --chown=ttcore:nodejs /usr/local/bin/mise /usr/local/bin/mise
+ENV MISE_DATA_DIR="/mise"
+ENV MISE_CONFIG_DIR="/mise"
+ENV PATH="/mise/shims:$PATH"
+ENV MISE_JOBS=1
+ENV MISE_TRUSTED_CONFIG_PATHS=/app/mise.toml
+ENV NODE_ENV="production"
+ENV HOST=0.0.0.0
+ENV PORT=4321
+ENV ORIGIN="https://ttcore.gurkz.me/"
+
+COPY --from=tools /usr/bin/mise /usr/local/bin/mise
+COPY --from=tools --chown=ttcore:nodejs /mise /mise
 
 COPY --from=prod-deps --chown=ttcore:nodejs /app/node_modules /app/node_modules
 COPY --from=build --chown=ttcore:nodejs /app/build /app/build
 COPY --from=build --chown=ttcore:nodejs /app/mise.toml /app/mise.lock /app/.npmrc /app/package.json /app/aube-lock.yaml ./
 
-ENV NODE_ENV="production"
-ENV HOST=0.0.0.0
-ENV PORT=4321
-ENV ORIGIN="https://ttcore.gurkz.me/"
 EXPOSE 4321/tcp
-
 USER ttcore
-
-ENV MISE_LIBC="musl"
-ENV MISE_DATA_DIR="/opt/mise/data"
-ENV MISE_CONFIG_DIR="/opt/mise/config"
-ENV PATH="/opt/mise/data/shims:$PATH"
-ENV MISE_TRUSTED_CONFIG_PATHS=/app/mise.toml
 
 CMD ["mise", "exec", "--", "node", "./build/index.js"]
