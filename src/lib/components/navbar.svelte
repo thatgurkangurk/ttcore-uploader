@@ -8,7 +8,7 @@
 </script>
 
 {#snippet navLink(to: string, label: string)}
-	{@const active = page.url.pathname === to}
+	{const active = page.url.pathname === to}
 	<Button
 		variant="link"
 		class={["p-0", active ? "text-primary underline" : "text-white"]}

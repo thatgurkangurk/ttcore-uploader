@@ -50,7 +50,7 @@
 			</AlertDescription>
 		</Alert>
 
-		{@const date = await getDateOfLastSubmissionForVideoByCurrentUser(data.details.id)}
+		{const date = await getDateOfLastSubmissionForVideoByCurrentUser(data.details.id)}
 
 		{#if (!date || date > data.details.messageUpdatedAt!) && !isMessageDismissed}
 			<br />
