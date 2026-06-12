@@ -2,6 +2,7 @@
 	import { page } from "$app/state";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { useSession } from "$lib/session.svelte";
+	import { dev } from "$app/environment";
 
 	const session = useSession();
 </script>
@@ -21,4 +22,11 @@
 		{page.error?.message ?? "sorry, but you cannot access this page"}
 	</h1>
 	<h1>error {page.status}: {page.error?.message}</h1>
+{:else}
+	<h1>unknown error {page.status}</h1>
+	<p>{page.error?.message}</p>
+
+	{#if dev}
+		<pre>{JSON.stringify(page.error, null, 2)}</pre>
+	{/if}
 {/if}

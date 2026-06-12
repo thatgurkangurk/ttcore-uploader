@@ -132,10 +132,10 @@ export function configureForm<Input extends RemoteFormInput = RemoteFormInput>(
 
 	const attributes = $derived(
 		Object.assign(
-			form.enhance(async ({ submit, form: formEl, data }) => {
+			form.enhance(async ({ submit, element, fields }) => {
 				if (submitting) return;
 
-				const bf = !onsubmit || (await onsubmit({ dirty, form: formEl, data }));
+				const bf = !onsubmit || (await onsubmit({ dirty, form: element, data: fields.value() }));
 				if (!bf) return;
 
 				submitting = true;
