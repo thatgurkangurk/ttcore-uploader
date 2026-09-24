@@ -39,41 +39,15 @@ RUN mise exec -- aube install --frozen-lockfile --prod --no-optional
 
 FROM tools AS build
 ENV CI="1"
-ENV DATABASE_URL="postgres://changeme"
-ENV BETTER_AUTH_SECRET="changeme"
 COPY --from=deps /app/node_modules /app/node_modules
 COPY . .
 RUN CI="1" mise exec -- aube run build
 
 
-FROM debian:13-slim AS runner
+FROM caddy:2-alpine AS runner
 
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+EXPOSE 4321
 
-RUN groupadd -g 1001 nodejs \
- && useradd -u 1001 -g nodejs -m -s /bin/bash ttcore
+COPY --from=build /app/build /usr/share/caddy
 
-WORKDIR /app
-
-ENV MISE_DATA_DIR="/mise"
-ENV MISE_CONFIG_DIR="/mise"
-ENV PATH="/mise/shims:$PATH"
-ENV MISE_JOBS=1
-ENV MISE_TRUSTED_CONFIG_PATHS=/app/mise.toml
-ENV NODE_ENV="production"
-ENV HOST=0.0.0.0
-ENV PORT=4321
-ENV ORIGIN="https://ttcore.gurkz.me/"
-
-COPY --from=tools /usr/bin/mise /usr/local/bin/mise
-COPY --from=tools --chown=ttcore:nodejs /mise /mise
-
-COPY --from=prod-deps --chown=ttcore:nodejs /app/node_modules /app/node_modules
-COPY --from=build --chown=ttcore:nodejs /app/build /app/build
-COPY --from=build --chown=ttcore:nodejs /app/mise.toml /app/mise.lock /app/.npmrc /app/package.json /app/aube-lock.yaml ./
-
-EXPOSE 4321/tcp
-USER ttcore
-
-CMD ["mise", "exec", "--", "node", "./build/index.js"]
+CMD ["caddy", "file-server", "--listen", ":4321", "--root", "/usr/share/caddy", "--try-files", "{path}", "{path}.html", "index.html"]
