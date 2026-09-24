@@ -50,4 +50,10 @@ EXPOSE 4321
 
 COPY --from=build /app/build /usr/share/caddy
 
-CMD ["caddy", "file-server", "--listen", ":4321", "--root", "/usr/share/caddy", "--try-files", "{path}", "{path}.html", "index.html"]
+RUN echo $':4321 {\n\
+    root * /usr/share/caddy\n\
+    try_files {path} /index.html\n\
+    file_server\n\
+}' > /etc/caddy/Caddyfile
+
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
